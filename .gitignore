@@ -3,6 +3,7 @@ actix-video-gen/target
 .venv
 __pycache__
 **/static/uploads/
+**/static/background_videos/
 
 # Frontend
 # Logs
