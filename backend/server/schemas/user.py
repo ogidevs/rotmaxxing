@@ -2,22 +2,26 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
-class UserCreateSchema(BaseModel):
+class UserRegisterSchema(BaseModel):
     username: str
     email: EmailStr
     password: str
 
 
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class UserUpdateSchema(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-    password: Optional[str] = None
+    password: str = None
 
 
 class UserResponseSchema(BaseModel):
     id: str = Field(..., alias="_id")  # Map `_id` to `id`
     username: str
     email: str
+    token: Optional[str] = None
 
     class Config:
         from_attributes = True

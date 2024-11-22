@@ -3,7 +3,7 @@ from openai import OpenAI
 
 client = OpenAI()
 
-output_dest = Path(__file__).parent.parent / "static" / "uploads"
+output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "uploads"
 
 
 def text_to_speech(

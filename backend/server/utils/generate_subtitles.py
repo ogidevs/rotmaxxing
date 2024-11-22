@@ -1,7 +1,7 @@
 from pathlib import Path
 import whisper
 
-output_dest = Path(__file__).parent.parent / "static" / "uploads"
+output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "uploads"
 
 
 def generate_subtitles(folder_id: str, file_path: str, model="small") -> str:
