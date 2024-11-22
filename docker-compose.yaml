@@ -14,16 +14,15 @@ services:
       - JWT_SECRET=XXXXX
       - JWT_ALGORITHM=XXXX
     depends_on:
-      - rust_service
+      - mongodb
     networks:
       - backend
-  # TODO
-  rust_service:
-    build: ./rust_service
+  mongodb:
+    image: mongo:latest
     ports:
-      - "6969:6969"
+      - "27017:27017"
     volumes:
-      - shared_data:/backend/static  # Mount the same shared volume for Rust to access
+      - shared_data:/data/db  # Mount shared volume to /data/db in the MongoDB container
     networks:
       - backend
 
