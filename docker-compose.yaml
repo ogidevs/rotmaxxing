@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  fastapi:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - shared_data:/backend/static  # Mount shared volume to /app/static in the FastAPI container
+    environment:
+      - OPENAI_API_KEY=XXXX
+      - MONGO_URI=mongodb://localhost:27017/brainrot
+      - ACTIX_PORT=6969
+      - JWT_SECRET=XXXXX
+      - JWT_ALGORITHM=XXXX
+    depends_on:
+      - rust_service
+    networks:
+      - backend
+  # TODO
+  rust_service:
+    build: ./rust_service
+    ports:
+      - "6969:6969"
+    volumes:
+      - shared_data:/backend/static  # Mount the same shared volume for Rust to access
+    networks:
+      - backend
+
+volumes:
+  shared_data:  # Declare a named volume
+
+networks:
+  backend:  # Define a custom network
+    driver: bridge
