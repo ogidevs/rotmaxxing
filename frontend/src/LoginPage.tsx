@@ -9,7 +9,7 @@ import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 
 export default function AuthPage() {
-   const API_URL = "http://localhost:8001";
+   const API_URL = 'http://localhost:8001';
    const [darkMode, setDarkMode] = useState(false);
    const [isLogin, setIsLogin] = useState(true); // Track whether it's Login or Register mode
    const [email, setEmail] = useState('');
