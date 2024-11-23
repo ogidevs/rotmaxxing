@@ -1,4 +1,5 @@
 # user_routes.py
+import json
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -22,7 +23,7 @@ from server.schemas.user import (
 )
 from server.auth.auth_handler import decode_jwt, sign_jwt
 from server.auth.auth_bearer import oauth
-from server.utils.hashing import hash_password, verify_password
+from server.utils.hashing import verify_password
 
 user_router = APIRouter()
 
@@ -31,7 +32,6 @@ user_router = APIRouter()
 async def create_user_endpoint(user_data: UserRegisterSchema):
     if user_data.password != user_data.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
-    user_data.password = hash_password(user_data.password)
     user = await create_user(user_data)
     user_dict = dict(user)
     user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
@@ -44,7 +44,7 @@ async def google_login(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@user_router.route("/auth/google", include_in_schema=False)
+@user_router.route("/auth/google")
 async def auth_google(request: Request):
     try:
         token = await oauth.google.authorize_access_token(request)
@@ -62,8 +62,23 @@ async def auth_google(request: Request):
     )
     user_dict = dict(user)
     user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
-    print(user_dict)
-    return JSONResponse(content=user_dict)
+    response = RedirectResponse(url="/", status_code=301)
+    response.headers["Refresh"] = "0; url=/"
+    response.set_cookie(
+        key="jwt",
+        value=user_dict["token"],
+        max_age=31449600,
+        samesite="Lax",
+        secure=True,
+    )
+    response.set_cookie(
+        key="userInfo",
+        value=json.dumps(user_dict),
+        max_age=31449600,
+        samesite="Lax",
+        secure=True
+    )
+    return response 
 
 
 @user_router.post("/login", response_model=UserResponseSchema)
@@ -71,11 +86,11 @@ async def login_user_endpoint(user_data: UserLoginSchema):
     user = await get_user_by_email(user_data.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    if not verify_password(user_data.password, user["password"]):
-        raise HTTPException(status_code=400, detail="Invalid password")
     user_dict = dict(user)
+    if not await verify_password(user_data.password, user_dict["password"]):
+        raise HTTPException(status_code=400, detail="Invalid password")
     user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
-    return user
+    return user_dict
 
 
 @user_router.post(
@@ -107,6 +122,5 @@ async def update_user_endpoint(
     user_data: UserUpdateSchema, token: str = Depends(JWTBearer())
 ):
     decoded_token = decode_jwt(token)
-    user_data.password = await hash_password(user_data.password)
     user = await update_user(decoded_token["user_id"], user_data)
     return user

@@ -7,6 +7,7 @@ class User(Document, BaseModel):
     username: str
     email: str
     password: Optional[str] = None
+    sub: Optional[str] = None # Sub field for Google OAuth
 
     class Settings:
         collection = "users"
@@ -19,6 +20,7 @@ class UserReturn(BaseModel):
     id: str = Field(..., alias="_id")  # Map `_id` to `id`
     username: str
     email: str
+    password: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -27,5 +29,5 @@ class UserReturn(BaseModel):
     @classmethod
     def from_document(cls, document: User) -> "UserReturn":
         return cls(
-            id=str(document.id), username=document.username, email=document.email
+            id=str(document.id), username=document.username, email=document.email, password=document.password
         )

@@ -5,6 +5,7 @@ from typing import List, Optional
 from fastapi import HTTPException
 
 from server.models.user import User, UserReturn
+from server.utils.hashing import hash_password
 from server.schemas.user import UserRegisterSchema, UserGoogleRegisterSchema
 
 import os, random
@@ -17,7 +18,6 @@ class Database:
         self.db_name = db_name
         self.client = None
         self.db = None
-        self.fs = None  # Add GridFS bucket here
 
     async def connect(self):
         self.client = AsyncIOMotorClient(self.db_url)
@@ -32,7 +32,6 @@ class Database:
 
 # Initialize the database connection
 db = Database(db_url=os.getenv("MONGO_URI"), db_name="brainrot")
-fs = db.fs
 
 
 # User creation logic for standard registration
@@ -47,6 +46,9 @@ async def create_user(user_data: UserRegisterSchema) -> UserReturn:
         )
     if not validate_username(user_data.username):
         raise HTTPException(status_code=400, detail="Invalid username format")
+    
+    user_data.password = await hash_password(user_data.password)
+    
     user = User(
         username=user_data.username, email=user_data.email, password=user_data.password
     )
@@ -61,16 +63,13 @@ async def create_user_google(user_data: UserGoogleRegisterSchema) -> UserReturn:
         return UserReturn.from_document(existing_user)
 
     # Optional: Automatically generate a username if none is provided
-    username = user_data.username or generate_username(user_data.email) + str(
-        random.randint(1000, 9999)
-    )
+    if validate_username(user_data.username):
+        username = user_data.username
+    else:
+        username = generate_username(user_data.email) + str(random.randint(1000, 9999))
     # Ensure the username is unique
     if await get_user_by_username(username):
         raise HTTPException(status_code=400, detail="Username already taken")
-    # Validate username to ensure it's unique and follows a good format
-    if not validate_username(username):
-        raise HTTPException(status_code=400, detail="Invalid username format")
-
     # Create new user
     user = User(
         username=username,
@@ -117,7 +116,7 @@ async def update_user(user_id: str, user_data: UserRegisterSchema) -> UserReturn
     if user_data.email:
         user.email = user_data.email
     if user_data.password:
-        user.password = await user_data.password
+        user.password = await hash_password(user_data.password)
     await user.save()
     return UserReturn.from_document(user)
 

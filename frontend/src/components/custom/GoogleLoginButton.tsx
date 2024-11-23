@@ -9,6 +9,7 @@ export function GoogleLoginButton({
 }) {
    return (
       <Button
+         type="button"
          variant="outline"
          onClick={onClick}
          disabled={isLoading}

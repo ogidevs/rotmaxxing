@@ -10,7 +10,7 @@ output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "upload
 voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
 
 
-def text_to_speech(text: str, voice: str = "alloy", folder_id: str = None) -> Path:
+async def text_to_speech(text: str, voice: str = "alloy", folder_id: str = None) -> Path:
     try:
         if voice not in voices:
             raise ValueError(f"Voice {voice} not found. Available voices: {voices}")

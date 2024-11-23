@@ -10,11 +10,14 @@ from moviepy.audio.fx.AudioFadeOut import AudioFadeOut
 from pysrt import open as open_srt
 import random
 
+import asyncio
+
+
 output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "uploads"
 fonts_dir = Path(__file__).resolve().parent.parent.parent / "static" / "fonts"
 
 
-def finalize_video(
+async def finalize_video(
     video_path, audio_path, subtitles_path, folder_id, subtitles_options, video_options
 ):
     try:
@@ -30,8 +33,8 @@ def finalize_video(
             Path, (video_path, audio_path, subtitles_path)
         )
 
-        subtitles = parse_srt(srt_file)
-        video_duration = get_duration_by_subtitles(subtitles)
+        subtitles = await parse_srt(srt_file)
+        video_duration = await get_duration_by_subtitles(subtitles)
 
         video = VideoFileClip(str(video_path))
         random_start = random.uniform(0, video.duration - video_duration)
@@ -50,7 +53,7 @@ def finalize_video(
             ]
         )
 
-        generator = lambda txt: TextClip(text=txt, **subtitles_options, size=video.size)
+        generator = lambda txt: TextClip(text=txt, **subtitles_options, size=video.size, margin=(10, 10))
         subtitle_clips = SubtitlesClip(subtitles=subtitles, make_textclip=generator)
 
         final_video = CompositeVideoClip(
@@ -74,7 +77,7 @@ def finalize_video(
         return None
 
 
-def parse_srt(srt_file):
+async def parse_srt(srt_file):
     subtitles = []
     srt = open_srt(srt_file)
     for sub in srt:
@@ -94,11 +97,11 @@ def parse_srt(srt_file):
     return subtitles
 
 
-def get_duration_by_subtitles(subtitles):
+async def get_duration_by_subtitles(subtitles):
     return subtitles[-1][0][1]
 
 
-def resize_video_for_tiktok(video):
+async def resize_video_for_tiktok(video):
     target_width, target_height = 1080, 1920
     aspect_ratio = target_width / target_height
 
@@ -117,13 +120,12 @@ def resize_video_for_tiktok(video):
     # Resize to target dimensions
     return video.with_effects([Resize(height=target_height)])
 
-
-if __name__ == "__main__":
-    finalize_video(
+async def main():
+    await finalize_video(
         r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\background_videos\mc_video.mp4",
-        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\85dbdb9a-096c-4644-83a6-4caf3463b295\speech.wav",
-        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\85dbdb9a-096c-4644-83a6-4caf3463b295\subtitles.srt",
-        "85dbdb9a-096c-4644-83a6-4caf3463b295",
+        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\330ab0af-28fd-409a-896b-5d3fb2418f2b\speech.wav",
+        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\330ab0af-28fd-409a-896b-5d3fb2418f2b\subtitles.srt",
+        "330ab0af-28fd-409a-896b-5d3fb2418f2b",
         {
             "font": "Montserrat-VariableFont.ttf",
             "font_size": 40,  # Larger font size for better visibility
@@ -147,3 +149,6 @@ if __name__ == "__main__":
             "subtitles_position": "center",
         },
     )
+
+if __name__ == "__main__":
+    asyncio.run(main())

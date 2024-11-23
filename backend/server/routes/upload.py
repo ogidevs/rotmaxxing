@@ -30,7 +30,6 @@ async def serve_subtitles(folder_id: str):
 
     return FileResponse(file_path)
 
-
 @upload_router.post("/generateBrainRot")
 async def upload_file(upload: UploadSchema):
     generated_id = uuid.uuid4()
@@ -38,14 +37,14 @@ async def upload_file(upload: UploadSchema):
     random_background_video = background_videos_path / "mc_video.mp4"
     folder_path = Path(os.getcwd() + f"/static/uploads/{generated_id}")
     folder_path.mkdir(parents=True, exist_ok=True)
-    speech_path = text_to_speech(
+    speech_path = await text_to_speech(
         text=upload.text, folder_id=generated_id, voice=upload.audio_options["voice"]
     )
-    subtitles_path = generate_subtitles(
+    subtitles_path = await generate_subtitles(
         folder_id=generated_id,
         file_path=str(speech_path),
     )
-    result = finalize_video(
+    result = await finalize_video(
         video_path=random_background_video,
         audio_path=str(speech_path),
         subtitles_path=str(subtitles_path),

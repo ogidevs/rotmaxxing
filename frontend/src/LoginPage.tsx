@@ -3,19 +3,47 @@ import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import GoogleButton from 'react-google-button';
 import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
+import AuthHandler from './AuthHandler'; // Import the AuthHandler
 
-export default function LoginPage() {
+export default function AuthPage() {
    const [darkMode, setDarkMode] = useState(false);
-   const [isLoading, setIsLoading] = useState(false);
+   const [isLogin, setIsLogin] = useState(true); // Track whether it's Login or Register mode
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
+   const [confirmPassword, setConfirmPassword] = useState(''); // For registration
+   const [error, setError] = useState('');
+   const { login, register } = AuthHandler(); // Use login and register functions from AuthHandler
+
+   const toggleDarkMode = () => {
+      setDarkMode(!darkMode);
+   };
 
    const handleGoogleLogin = () => {
       window.location.href = '/users/login/google';
    };
 
-   const toggleDarkMode = () => {
-      setDarkMode(!darkMode);
+   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (isLogin) {
+         const success = await login(email, password);
+         if (success) {
+            window.location.href = '/';
+         } else {
+            setError('Invalid credentials');
+         }
+      } else {
+         if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+         }
+         const success = await register(email, password, confirmPassword);
+         if (success) {
+            window.location.href = '/';
+         } else {
+            setError('Failed to register. Try again.');
+         }
+      }
    };
 
    return (
@@ -25,16 +53,13 @@ export default function LoginPage() {
          <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 bg-white dark:bg-zinc-900 transition-colors duration-300">
             <div className="w-full max-w-md">
                <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-rose-400 to-rose-500 text-transparent bg-clip-text">
-                  Create Account
+                  {isLogin ? 'Login to Your Account' : 'Create Account'}
                </h1>
 
                {/* Form */}
-               <form className="space-y-6">
+               <form className="space-y-6" onSubmit={handleFormSubmit}>
                   <div className="space-y-2">
-                     <Label
-                        htmlFor="email"
-                        className="text-zinc-800 dark:text-zinc-200"
-                     >
+                     <Label htmlFor="email" className="text-zinc-800 dark:text-zinc-200">
                         Email
                      </Label>
                      <Input
@@ -42,13 +67,12 @@ export default function LoginPage() {
                         type="email"
                         placeholder="Enter your email"
                         className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                      />
                   </div>
                   <div className="space-y-2">
-                     <Label
-                        htmlFor="password"
-                        className="text-zinc-800 dark:text-zinc-200"
-                     >
+                     <Label htmlFor="password" className="text-zinc-800 dark:text-zinc-200">
                         Password
                      </Label>
                      <Input
@@ -56,32 +80,48 @@ export default function LoginPage() {
                         type="password"
                         placeholder="Enter your password"
                         className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                      />
                   </div>
-                  <div className="space-y-2">
-                     <Label
-                        htmlFor="confirm-password"
-                        className="text-zinc-800 dark:text-zinc-200"
-                     >
-                        Confirm Password
-                     </Label>
-                     <Input
-                        id="confirm-password"
-                        type="password"
-                        placeholder="Confirm your password"
-                        className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
-                     />
-                  </div>
-                  <Button type="submit" variant={'login'}>
-                     Create Account
+                  {!isLogin && (
+                     <div className="space-y-2">
+                        <Label htmlFor="confirmPassword" className="text-zinc-800 dark:text-zinc-200">
+                           Confirm Password
+                        </Label>
+                        <Input
+                           id="confirmPassword"
+                           type="password"
+                           placeholder="Confirm your password"
+                           className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
+                           value={confirmPassword}
+                           onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                     </div>
+                  )}
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+                  <Button type="submit" variant="login">
+                     {isLogin ? 'Login' : 'Register'}
                   </Button>
-
-                  <GoogleLoginButton
-                     onClick={() => handleGoogleLogin()}
-                     isLoading={isLoading}
-                  />
-                  {/* TODO Google Auth button*/}
+                  <GoogleLoginButton onClick={handleGoogleLogin} />
                </form>
+               <div className="flex justify-between items-center mt-8 text-center flex-col">
+                  <p className="text-zinc-800 dark:text-zinc-200">
+                     {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                  </p>
+                  <Button
+                     variant="outline"
+                     size="icon"
+                     onClick={() => {
+                        setIsLogin(!isLogin);
+                        setError('');
+                      }}
+                     className="w-full dark:bg-zinc-800 dark:text-zinc-200"
+                  >
+                     <strong>{isLogin ? 'Register' : 'Login'}</strong>
+                  </Button>
+                     
+               </div>
 
                <div className="flex justify-center mt-8">
                   <Button
