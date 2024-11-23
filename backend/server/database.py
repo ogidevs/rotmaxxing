@@ -63,10 +63,7 @@ async def create_user_google(user_data: UserGoogleRegisterSchema) -> UserReturn:
         return UserReturn.from_document(existing_user)
 
     # Optional: Automatically generate a username if none is provided
-    if validate_username(user_data.username):
-        username = user_data.username
-    else:
-        username = generate_username(user_data.email) + str(random.randint(1000, 9999))
+    username = generate_username(user_data.email) + str(random.randint(1000, 9999))
     # Ensure the username is unique
     if await get_user_by_username(username):
         raise HTTPException(status_code=400, detail="Username already taken")
@@ -97,7 +94,7 @@ async def get_user_by_sub(sub: str) -> Optional[UserReturn]:
 
 
 async def get_user_by_username(username: str) -> Optional[UserReturn]:
-    user = await User.find_one({"username:": username})
+    user = await User.find_one({"username": username})
     return UserReturn.from_document(user) if user else None
 
 
@@ -144,7 +141,6 @@ async def deduct_user_credit(user_id: str, amount: int) -> UserReturn:
     user.credit -= amount
     await user.save()
     return UserReturn.from_document(user)
-
 
 def validate_username(username: str) -> bool:
     """

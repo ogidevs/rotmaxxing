@@ -18,17 +18,17 @@ const App = () => {
           {/* If the user is authenticated, navigate them to the dashboard */}
           <Route
             path="/home"
-            element={isAuthenticated() ? <HomePage /> : <Navigate to="/login" />}
+            element={isAuthenticated() ? <HomePage /> : <Navigate to="/start" />}
           />
           {/* Login route */}
           <Route
-            path="/login"
+            path="/start"
             element={!isAuthenticated() ? <LoginPage /> : <Navigate to="/home" />}
           />
           {/* Add other routes here */}
           <Route
             path="/"
-            element={<Navigate to={isAuthenticated() ? "/home" : "/login"} />}
+            element={<Navigate to={isAuthenticated() ? "/home" : "/start"} />}
           />
         </Routes>
       </div>

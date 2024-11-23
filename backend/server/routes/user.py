@@ -29,11 +29,25 @@ user_router = APIRouter()
 
 
 @user_router.post("/register", response_model=UserResponseSchema)
-async def create_user_endpoint(user_data: UserRegisterSchema):
+async def register_user_endpoint(user_data: UserRegisterSchema):
     if user_data.password != user_data.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
     user = await create_user(user_data)
     user_dict = dict(user)
+    user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
+    return user_dict
+
+
+@user_router.post("/login", response_model=UserResponseSchema)
+async def login_user_endpoint(user_data: UserLoginSchema):
+    print("A")
+    user = await get_user_by_email(user_data.email)
+    print(user)
+    if user == None:
+        raise HTTPException(status_code=400, detail="User not found")
+    user_dict = dict(user)
+    if not await verify_password(user_data.password, user_dict["password"]):
+        raise HTTPException(status_code=400, detail="Invalid password")
     user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
     return user_dict
 
@@ -80,24 +94,11 @@ async def auth_google(request: Request):
     )
     return response 
 
-
-@user_router.post("/login", response_model=UserResponseSchema)
-async def login_user_endpoint(user_data: UserLoginSchema):
-    user = await get_user_by_email(user_data.email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user_dict = dict(user)
-    if not await verify_password(user_data.password, user_dict["password"]):
-        raise HTTPException(status_code=400, detail="Invalid password")
-    user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
-    return user_dict
-
-
 @user_router.post(
     "/logout", include_in_schema=False, dependencies=[Depends(JWTBearer())]
 )
 async def logout():
-    response = RedirectResponse(url="/login")
+    response = RedirectResponse(url="/")
     response.delete_cookie("access_token")
     return response
 
@@ -110,7 +111,7 @@ async def get_user_endpoint(token: str = Depends(JWTBearer())):
     user = await get_user(decoded_token["user_id"])
     user_dict = dict(user)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=400, detail="User not found")
     user_dict["token"] = token
     return user_dict
 
@@ -130,7 +131,7 @@ async def verify_user_endpoint(token: str = Depends(JWTBearer())):
     decoded_token = decode_jwt(token)
     user = await get_user(decoded_token["user_id"])
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=400, detail="User not found")
     user_dict = dict(user)
     user_dict["token"] = token
     return user_dict

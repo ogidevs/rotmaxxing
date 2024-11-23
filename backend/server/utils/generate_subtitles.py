@@ -11,7 +11,7 @@ async def generate_subtitles(folder_id: str, file_path: str):
     return output_dest / str(folder_id) / "subtitles.srt"
 
 
-async def save_as_srt(transcription, output_dest, max_words=5, max_duration=1.5):
+async def save_as_srt(transcription, output_dest, max_words=5, max_duration=2.5):
     """
     Save transcription to an SRT file, splitting segments to meet the max_words and max_duration limits.
     """

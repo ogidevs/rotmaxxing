@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
 import AuthHandler from './AuthHandler'; // Import the AuthHandler
+import logo from './assets/logo.png';
 
 export default function AuthPage() {
    const [darkMode, setDarkMode] = useState(false);
    const [isLogin, setIsLogin] = useState(true); // Track whether it's Login or Register mode
    const [email, setEmail] = useState('');
+   const [username, setUsername] = useState(''); // For registration
    const [password, setPassword] = useState('');
    const [confirmPassword, setConfirmPassword] = useState(''); // For registration
    const [error, setError] = useState('');
@@ -26,29 +28,33 @@ export default function AuthPage() {
    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isLogin) {
-         const success = await login(email, password);
-         if (success) {
+         const response = await login(email, password);
+         if (response.success) {
             window.location.href = '/';
          } else {
-            setError('Invalid credentials');
+            setError(response.error || 'Failed to login. Try again.');
          }
       } else {
          if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
          }
-         const success = await register(email, password, confirmPassword);
-         if (success) {
+         const response = await register(username, email, password, confirmPassword);
+         if (response.success) {
             window.location.href = '/';
          } else {
-            setError('Failed to register. Try again.');
+            setError(response.error || 'Failed to register. Try again.');
          }
       }
    };
 
    return (
       <div className={`flex min-h-screen ${darkMode ? 'dark' : ''}`}>
-         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block"></div>
+         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block">
+            <div className="flex items-center justify-center h-full">
+               <img src={logo} alt="Logo" className="max-w-full max-h-full" />
+            </div>
+         </div>
 
          <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 bg-white dark:bg-zinc-900 transition-colors duration-300">
             <div className="w-full max-w-md">
@@ -58,6 +64,21 @@ export default function AuthPage() {
 
                {/* Form */}
                <form className="space-y-6" onSubmit={handleFormSubmit}>
+                  {!isLogin && (
+                     <div className="space-y-2">
+                        <Label htmlFor="username" className="text-zinc-800 dark:text-zinc-200">
+                           Username
+                        </Label>
+                        <Input
+                           id="username"
+                           type="text"
+                           placeholder="Enter your username"
+                           className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
+                           value={username}
+                           onChange={(e) => setUsername(e.target.value)}
+                        />
+                     </div>
+                  )}
                   <div className="space-y-2">
                      <Label htmlFor="email" className="text-zinc-800 dark:text-zinc-200">
                         Email

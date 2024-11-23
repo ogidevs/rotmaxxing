@@ -69,29 +69,31 @@ const useAuthHandler = () => {
   };
 
   // Registers a new user
-  const register = async (email: string, password: string, passwordConfirm: string): Promise<boolean> => {
+  const register = async (username: string, email: string, password: string, passwordConfirm: string): Promise<{ success: boolean; error?: any }> => {
     try {
       const response = await axios.post(`${API_URL}/users/register`, {
+        username,
         email,
         password,
-        passwordConfirm,
+        "confirm_password": passwordConfirm,
       });
 
       if (response.data?.token) {
         localStorage.setItem('jwt', response.data.token);
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-        return true;
+        return { success: true, error: null };
       }
-
-      return false;
+      console.error('Failed to register:', response.data);
+      return { success: false, error: 'Failed to register' };
     } catch (error) {
       console.error('Registration error:', error);
-      return false;
+      const errorMessage = (error as any).response?.data?.detail || 'Unknown error';
+      return { success: false, error: errorMessage };
     }
   };
 
   // Logs in the user
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: any }> => {
     try {
       const response = await axios.post(`${API_URL}/users/login`, {
         email,
@@ -101,13 +103,14 @@ const useAuthHandler = () => {
       if (response.data?.token) {
         localStorage.setItem('jwt', response.data.token);
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-        return true;
+        return { success: true, error: null };
       }
-
-      return false;
+      console.error('Invalid credentials:', response.data);
+      return { success: false, error: 'Invalid credentials' };
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      const errorMessage = (error as any).response?.data?.detail || 'Unknown error';
+      return { success: false, error: errorMessage };
     }
   };
 

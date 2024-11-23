@@ -50,6 +50,10 @@ app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="front
 async def serve_react_app(full_path: str):
     return app.responses.FileResponse("../frontend/dist/index.html")
 
+@app.get("/assets/{filename}")
+async def serve_assets(filename: str):
+    return app.responses.FileResponse(f"../frontend/dist/assets/{filename}")
+
 @app.exception_handler(404)
 async def not_found_handler(request, exc):
     return RedirectResponse(url="/")

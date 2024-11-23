@@ -8,6 +8,9 @@ class UserRegisterSchema(BaseModel):
     password: str
     confirm_password: str
 
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
 
 class UserGoogleRegisterSchema(BaseModel):
     username: str
@@ -15,15 +18,8 @@ class UserGoogleRegisterSchema(BaseModel):
     sub: str
     picture: Optional[str] = None
 
-
-class UserLoginSchema(BaseModel):
-    email: EmailStr
-    password: str
-
-
 class UserUpdateSchema(BaseModel):
     password: str = None
-
 
 class UserResponseSchema(BaseModel):
     id: str = Field(..., alias="_id")  # Map `_id` to `id`
