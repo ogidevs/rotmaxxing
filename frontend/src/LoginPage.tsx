@@ -128,24 +128,25 @@ export default function AuthPage() {
                      >
                         Password
                      </Label>
-                     <div className="relative">
+                     {/* <div className="relative"> */}
+                     <div className="flex items-center border dark:border-zinc-700 rounded-md overflow-hidden dark:bg-zinc-800">
                         <Input
                            id="password"
                            type={showPassword ? 'text' : 'password'}
                            placeholder="Enter your password"
-                           className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
+                           className="flex-1  border-none dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
                            value={password}
                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <button
                            type="button"
                            onClick={togglePasswordVisibility}
-                           className="absolute inset-y-0 right-2 flex items-center text-zinc-500 dark:text-zinc-400 bg-transparent border-none outline-none focus:outline-none"
+                           className="px-4 text-zinc-500 dark:text-zinc-400 bg-transparent border-none outline-none focus:outline-none"
                         >
                            {showPassword ? (
-                              <EyeOff className="h-4 w-4 hover:text-zinc-800 dark:hover:text-zinc-200" />
+                              <EyeOff className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                            ) : (
-                              <Eye className="h-4 w-4 hover:text-zinc-800 dark:hover:text-zinc-200" />
+                              <Eye className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                            )}
                         </button>
                      </div>
