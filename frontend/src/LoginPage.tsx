@@ -40,7 +40,12 @@ export default function AuthPage() {
             setError('Passwords do not match');
             return;
          }
-         const response = await register(username, email, password, confirmPassword);
+         const response = await register(
+            username,
+            email,
+            password,
+            confirmPassword
+         );
          if (response.success) {
             window.location.href = '/';
          } else {
@@ -50,14 +55,11 @@ export default function AuthPage() {
    };
 
    return (
-      <div className={`flex min-h-screen ${darkMode ? 'dark bg-zinc-900' : ''}`}>
-         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block">
-            <div className="flex items-center justify-center h-full">
-               <img src={''} alt="Logo" className="max-w-full max-h-full" />
-            </div>
-         </div>
-         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900">
-            <picture>
+      <div
+         className={`flex min-h-screen ${darkMode ? 'dark bg-zinc-900' : ''}`}
+      >
+         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900 flex items-center justify-center h-full">
+            <picture className="h-full">
                {/* Light theme image */}
                <source
                   srcSet={LightLogo}
@@ -80,7 +82,10 @@ export default function AuthPage() {
                <form className="space-y-6" onSubmit={handleFormSubmit}>
                   {!isLogin && (
                      <div className="space-y-2">
-                        <Label htmlFor="username" className="text-zinc-800 dark:text-zinc-200">
+                        <Label
+                           htmlFor="username"
+                           className="text-zinc-800 dark:text-zinc-200"
+                        >
                            Username
                         </Label>
                         <Input
