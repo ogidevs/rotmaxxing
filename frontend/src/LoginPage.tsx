@@ -7,7 +7,6 @@ import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
 import AuthHandler from './AuthHandler'; // Import the AuthHandler
 import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
-import logo from './assets/logo.png';
 
 export default function AuthPage() {
    const [darkMode, setDarkMode] = useState(false);
@@ -51,10 +50,10 @@ export default function AuthPage() {
    };
 
    return (
-      <div className={`flex min-h-screen ${darkMode ? 'dark' : ''}`}>
+      <div className={`flex min-h-screen ${darkMode ? 'dark bg-zinc-900' : ''}`}>
          <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block">
             <div className="flex items-center justify-center h-full">
-               <img src={logo} alt="Logo" className="max-w-full max-h-full" />
+               <img src={''} alt="Logo" className="max-w-full max-h-full" />
             </div>
          </div>
          <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900">
