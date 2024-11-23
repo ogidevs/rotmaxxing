@@ -1,9 +1,12 @@
 # user_routes.py
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse, RedirectResponse
 from server.auth.auth_bearer import JWTBearer
+from authlib.integrations.starlette_client import OAuthError
 from server.database import (
     create_user,
+    create_user_google,
     get_user,
     get_user_by_email,
     get_users,
@@ -11,12 +14,14 @@ from server.database import (
     delete_user,
 )
 from server.schemas.user import (
+    UserGoogleRegisterSchema,
     UserRegisterSchema,
     UserLoginSchema,
     UserResponseSchema,
     UserUpdateSchema,
 )
 from server.auth.auth_handler import decode_jwt, sign_jwt
+from server.auth.auth_bearer import oauth
 from server.utils.hashing import hash_password, verify_password
 
 user_router = APIRouter()
@@ -33,6 +38,34 @@ async def create_user_endpoint(user_data: UserRegisterSchema):
     return user_dict
 
 
+@user_router.get("/login/google", include_in_schema=False)
+async def google_login(request: Request):
+    redirect_uri = request.url_for("auth_google")
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@user_router.route("/auth/google", include_in_schema=False)
+async def auth_google(request: Request):
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except OAuthError:
+        return RedirectResponse(url="redirect to frontend login page")
+
+    user = token.get("userinfo")
+    user = await create_user_google(
+        UserGoogleRegisterSchema(
+            username=user.get("name"),
+            email=user.get("email"),
+            sub=user.get("sub"),
+            picture=user.get("picture"),
+        )
+    )
+    user_dict = dict(user)
+    user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
+    print(user_dict)
+    return JSONResponse(content=user_dict)
+
+
 @user_router.post("/login", response_model=UserResponseSchema)
 async def login_user_endpoint(user_data: UserLoginSchema):
     user = await get_user_by_email(user_data.email)
@@ -43,6 +76,15 @@ async def login_user_endpoint(user_data: UserLoginSchema):
     user_dict = dict(user)
     user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
     return user
+
+
+@user_router.post(
+    "/logout", include_in_schema=False, dependencies=[Depends(JWTBearer())]
+)
+async def logout():
+    response = RedirectResponse(url="/login")
+    response.delete_cookie("access_token")
+    return response
 
 
 @user_router.get(

@@ -1,3 +1,4 @@
+from typing import Optional
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -5,7 +6,7 @@ from pydantic import BaseModel, Field
 class User(Document, BaseModel):
     username: str
     email: str
-    password: str
+    password: Optional[str] = None
 
     class Settings:
         collection = "users"

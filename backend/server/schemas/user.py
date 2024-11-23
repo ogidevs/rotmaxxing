@@ -9,6 +9,13 @@ class UserRegisterSchema(BaseModel):
     confirm_password: str
 
 
+class UserGoogleRegisterSchema(BaseModel):
+    username: str
+    email: EmailStr
+    sub: str
+    picture: Optional[str] = None
+
+
 class UserLoginSchema(BaseModel):
     email: EmailStr
     password: str

@@ -5,9 +5,9 @@ from typing import List, Optional
 from fastapi import HTTPException
 
 from server.models.user import User, UserReturn
-from server.schemas.user import UserRegisterSchema
+from server.schemas.user import UserRegisterSchema, UserGoogleRegisterSchema
 
-import os
+import os, random
 from bson import ObjectId
 
 
@@ -35,13 +35,49 @@ db = Database(db_url=os.getenv("MONGO_URI"), db_name="brainrot")
 fs = db.fs
 
 
+# User creation logic for standard registration
 async def create_user(user_data: UserRegisterSchema) -> UserReturn:
-    password = await user_data.password
-    if await get_user_by_email(user_data.email) or await get_user_by_username(
-        user_data.username
-    ):
-        raise HTTPException(status_code=400, detail="User already exists")
-    user = User(username=user_data.username, email=user_data.email, password=password)
+    if await get_user_by_email(user_data.email):
+        raise HTTPException(
+            status_code=400, detail="User with that email already exists"
+        )
+    if await get_user_by_username(user_data.username):
+        raise HTTPException(
+            status_code=400, detail="User with that username already exists"
+        )
+    if not validate_username(user_data.username):
+        raise HTTPException(status_code=400, detail="Invalid username format")
+    user = User(
+        username=user_data.username, email=user_data.email, password=user_data.password
+    )
+    await user.insert()
+    return UserReturn.from_document(user)
+
+
+async def create_user_google(user_data: UserGoogleRegisterSchema) -> UserReturn:
+    # Check if the user already exists based on the email or Google sub
+    existing_user = await get_user_by_email(user_data.email)
+    if existing_user:
+        return UserReturn.from_document(existing_user)
+
+    # Optional: Automatically generate a username if none is provided
+    username = user_data.username or generate_username(user_data.email) + str(
+        random.randint(1000, 9999)
+    )
+    # Ensure the username is unique
+    if await get_user_by_username(username):
+        raise HTTPException(status_code=400, detail="Username already taken")
+    # Validate username to ensure it's unique and follows a good format
+    if not validate_username(username):
+        raise HTTPException(status_code=400, detail="Invalid username format")
+
+    # Create new user
+    user = User(
+        username=username,
+        email=user_data.email,
+        sub=user_data.sub,
+        picture=user_data.picture,
+    )
     await user.insert()
     return UserReturn.from_document(user)
 
@@ -53,6 +89,11 @@ async def get_user(user_id: str) -> Optional[UserReturn]:
 
 async def get_user_by_email(email: str) -> Optional[UserReturn]:
     user = await User.find_one({"email": email})
+    return UserReturn.from_document(user) if user else None
+
+
+async def get_user_by_sub(sub: str) -> Optional[UserReturn]:
+    user = await User.find_one({"sub": sub})
     return UserReturn.from_document(user) if user else None
 
 
@@ -88,3 +129,15 @@ async def delete_user(user_id: str) -> bool:
 
     await user.delete()
     return True
+
+
+def validate_username(username: str) -> bool:
+    """
+    Validate the username to ensure it doesn't contain invalid characters.
+    """
+    return username.isalnum() and len(username) > 3
+
+
+def generate_username(email: str) -> str:
+    """Generate a username based on the user's email."""
+    return email.split("@")[0]  # Simplified, you can customize this
