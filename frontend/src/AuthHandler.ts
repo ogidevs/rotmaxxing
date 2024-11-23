@@ -97,7 +97,9 @@ const useAuthHandler = () => {
          });
 
          if (response.data?.token) {
-            if ((await verifyToken()) === true) {
+            localStorage.setItem('jwt', response.data.token);
+            const isVerified = await verifyToken();
+            if (isVerified) {
                return { success: true, error: null };
             }
          }
@@ -123,7 +125,9 @@ const useAuthHandler = () => {
          });
 
          if (response.data?.token) {
-            if ((await verifyToken()) === true) {
+            localStorage.setItem('jwt', response.data.token);
+            const isVerified = await verifyToken();
+            if (isVerified) {
                return { success: true, error: null };
             }
          }
