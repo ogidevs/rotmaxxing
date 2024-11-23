@@ -124,3 +124,13 @@ async def update_user_endpoint(
     decoded_token = decode_jwt(token)
     user = await update_user(decoded_token["user_id"], user_data)
     return user
+
+@user_router.get("/verify", response_model=UserResponseSchema)
+async def verify_user_endpoint(token: str = Depends(JWTBearer())):
+    decoded_token = decode_jwt(token)
+    user = await get_user(decoded_token["user_id"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_dict = dict(user)
+    user_dict["token"] = token
+    return user_dict

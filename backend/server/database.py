@@ -129,6 +129,22 @@ async def delete_user(user_id: str) -> bool:
     await user.delete()
     return True
 
+async def set_user_credit(user_id: str, credit: int) -> UserReturn:
+    user = await User.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.credit = credit
+    await user.save()
+    return UserReturn.from_document(user)
+
+async def deduct_user_credit(user_id: str, amount: int) -> UserReturn:
+    user = await User.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.credit -= amount
+    await user.save()
+    return UserReturn.from_document(user)
+
 
 def validate_username(username: str) -> bool:
     """

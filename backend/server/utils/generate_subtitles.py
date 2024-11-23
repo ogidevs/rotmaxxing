@@ -5,7 +5,7 @@ output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "upload
 
 
 async def generate_subtitles(folder_id: str, file_path: str):
-    model = whisper.load_model("small")
+    model = whisper.load_model("tiny", in_memory=True)
     result = model.transcribe(file_path, word_timestamps=True)
     await save_as_srt(result, output_dest / str(folder_id) / "subtitles.srt")
     return output_dest / str(folder_id) / "subtitles.srt"

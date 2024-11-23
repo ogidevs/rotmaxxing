@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
 
 const HomePage: React.FC = () => {
-    const { logout } = AuthHandler(); // Get the logout function from AuthHandler
+    const { logout, getAuthHeaders } = AuthHandler(); // Get the logout function from AuthHandler
     const [text, setText] = useState<string>('');
     const [videoUrl, setVideoUrl] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -13,6 +13,7 @@ const HomePage: React.FC = () => {
         const response = await fetch('/uploads/generateBrainRot', {
             method: 'POST',
             headers: {
+                ...getAuthHeaders(), // Add the authorization headers to the request
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -44,7 +45,11 @@ const HomePage: React.FC = () => {
                 }
             }),
         });
-
+        if (!response.ok) {
+            console.error('Failed to generate brain rot:', response);
+            setLoading(false);
+            return;
+        }
         const blob = await response.blob();
         const videoUrl = URL.createObjectURL(blob);
         setVideoUrl(videoUrl);

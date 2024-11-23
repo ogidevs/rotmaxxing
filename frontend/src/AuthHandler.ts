@@ -1,85 +1,135 @@
-// authHandler.ts
 import axios from 'axios';
+import { useEffect } from 'react';
 
-const API_URL = "http://localhost:8000"; // Replace with your API URL
+// Replace with your API URL
+const API_URL = "http://localhost:8000";
 
-const AuthHandler = () => {
+const useAuthHandler = () => {
+  // Effect to verify token and sync cookies when the component mounts
+  useEffect(() => {
+    const initializeAuth = async () => {
+      if (isAuthenticated()) {
+        const isVerified = await verifyToken();
+        if (!isVerified) {
+          console.warn('Token verification failed. Logging out...');
+          logout();
+        }
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  // Synchronizes cookies with localStorage
   const syncCookiesToLocalStorage = () => {
     const cookies = document.cookie.split('; ');
     cookies.forEach(cookie => {
       const [key, value] = cookie.split('=');
-  
+      const decodedValue = decodeURIComponent(value);
+
       if (key === 'jwt') {
-        localStorage.setItem('jwt', decodeURIComponent(value.replace(/\"/g, ''))); // Remove extraneous quotes
+        localStorage.setItem('jwt', decodedValue.replace(/\"/g, ''));
       }
-  
+
       if (key === 'userInfo') {
         try {
-          // Decode URI component and parse JSON
-          const userInfo = JSON.parse(decodeURIComponent(value.replace(/\\054/g, ',')));
+          const userInfo = JSON.parse(decodedValue.replace(/\\054/g, ',')); // Handle escaped commas
           localStorage.setItem('userInfo', JSON.stringify(userInfo));
         } catch (err) {
-          console.error('Failed to parse userInfo cookie', err);
+          console.error('Failed to parse userInfo cookie:', err);
         }
       }
     });
   };
-  
-  const register = async (email: string, password: string, passwordConfirm: string) => {
+
+  // Verifies the token with the server
+  const verifyToken = async (): Promise<boolean> => {
+    try {
+      const token = localStorage.getItem('jwt');
+      if (!token) return false;
+
+      const response = await axios.get(`${API_URL}/users/verify`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Token verification response:', response.data);
+      if (response.data?.token) {
+        // Update the token and userInfo if verification is successful
+        localStorage.setItem('jwt', response.data.token);
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error during token verification:', error);
+      return false;
+    }
+  };
+
+  // Registers a new user
+  const register = async (email: string, password: string, passwordConfirm: string): Promise<boolean> => {
     try {
       const response = await axios.post(`${API_URL}/users/register`, {
         email,
         password,
         passwordConfirm,
       });
-  
-      if (response.data && response.data.token) {
+
+      if (response.data?.token) {
         localStorage.setItem('jwt', response.data.token);
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
         return true;
       }
+
       return false;
     } catch (error) {
-      console.error('Registration failed', error);
+      console.error('Registration error:', error);
       return false;
     }
-  }
+  };
 
-  const login = async (email: string, password: string) => {
+  // Logs in the user
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await axios.post(`${API_URL}/users/login`, {
         email,
         password,
       });
 
-      if (response.data && response.data.token) {
+      if (response.data?.token) {
         localStorage.setItem('jwt', response.data.token);
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
         return true;
       }
+
       return false;
     } catch (error) {
-      console.error('Login failed', error);
+      console.error('Login error:', error);
       return false;
     }
   };
 
+  // Logs out the user
   const logout = () => {
     localStorage.removeItem('jwt');
     localStorage.removeItem('userInfo');
     document.cookie = 'jwt=; Max-Age=0; path=/';
     document.cookie = 'userInfo=; Max-Age=0; path=/';
-    window.location.href = '/'; // Redirect to login page
+    window.location.href = '/'; // Redirect to the login page
   };
 
-  const isAuthenticated = () => {
+  // Checks if the user is authenticated
+  const isAuthenticated = (): boolean => {
     syncCookiesToLocalStorage();
-    return localStorage.getItem('jwt') !== null && localStorage.getItem('userInfo') !== null;
+    return !!localStorage.getItem('jwt') && !!localStorage.getItem('userInfo');
   };
 
-  const getAuthHeaders = () => {
-    syncCookiesToLocalStorage();
-    return localStorage.getItem('jwt') ? { Authorization: `Bearer ${localStorage.getItem('jwt')}` } : {};
+  // Provides authorization headers for API requests
+  const getAuthHeaders = (): Record<string, string> => {
+    const token = localStorage.getItem('jwt');
+    return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
   return {
@@ -91,4 +141,4 @@ const AuthHandler = () => {
   };
 };
 
-export default AuthHandler;
+export default useAuthHandler;
