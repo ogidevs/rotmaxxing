@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Replace with your API URL
 const API_URL = 'http://localhost:8001';
 
 const useAuthHandler = () => {
-   // Effect to verify token and sync cookies when the component mounts
+   const [user, setUser] = useState<any>(null);
+   const [token, setToken] = useState<string | null>(null);
    useEffect(() => {
       const initializeAuth = async () => {
          if (isAuthenticated()) {
@@ -16,27 +17,38 @@ const useAuthHandler = () => {
             }
          }
       };
-
+      syncCookiesToLocalStorage();
       initializeAuth();
    }, []);
 
    // Synchronizes cookies with localStorage
    const syncCookiesToLocalStorage = () => {
       const cookies = document.cookie.split('; ');
+
       cookies.forEach((cookie) => {
-         const [key, value] = cookie.split('=');
+         // Find the first occurrence of "=" to split the key and value
+         const indexOfEqual = cookie.indexOf('=');
+         if (indexOfEqual === -1) return; // Skip if "=" is not found in the cookie string
+
+         const key = cookie.substring(0, indexOfEqual);
+         const value = cookie.substring(indexOfEqual + 1);
          const decodedValue = decodeURIComponent(value);
 
+         // Handle the JWT cookie
          if (key === 'jwt') {
             localStorage.setItem('jwt', decodedValue.replace(/\"/g, ''));
          }
 
+         // Handle the userInfo cookie
          if (key === 'userInfo') {
             try {
-               const userInfo = JSON.parse(decodedValue.replace(/\\054/g, ',')); // Handle escaped commas
-               localStorage.setItem('userInfo', JSON.stringify(userInfo));
+               const cleanedValue = decodedValue.replace(/\\054/g, ',');
+               const parsedValue = JSON.parse(cleanedValue);
+               localStorage.setItem('userInfo', parsedValue);
+               console.log('Parsed userInfo cookie:', parsedValue);
             } catch (err) {
                console.error('Failed to parse userInfo cookie:', err);
+               console.error('Decoded userInfo cookie:', decodedValue); // Log the original decoded value for debugging
             }
          }
       });
@@ -53,14 +65,12 @@ const useAuthHandler = () => {
                Authorization: `Bearer ${token}`,
             },
          });
-         console.log('Token verification response:', response.data);
          if (response.data?.token) {
             // Update the token and userInfo if verification is successful
+            setUser(response.data);
+            setToken(response.data.token);
             localStorage.setItem('jwt', response.data.token);
-            localStorage.setItem(
-               'userInfo',
-               JSON.stringify(response.data.user)
-            );
+            localStorage.setItem('userInfo', JSON.stringify(response.data));
             return true;
          }
 
@@ -87,12 +97,9 @@ const useAuthHandler = () => {
          });
 
          if (response.data?.token) {
-            localStorage.setItem('jwt', response.data.token);
-            localStorage.setItem(
-               'userInfo',
-               JSON.stringify(response.data.user)
-            );
-            return { success: true, error: null };
+            if ((await verifyToken()) === true) {
+               return { success: true, error: null };
+            }
          }
          console.error('Failed to register:', response.data);
          return { success: false, error: 'Failed to register' };
@@ -116,12 +123,9 @@ const useAuthHandler = () => {
          });
 
          if (response.data?.token) {
-            localStorage.setItem('jwt', response.data.token);
-            localStorage.setItem(
-               'userInfo',
-               JSON.stringify(response.data.user)
-            );
-            return { success: true, error: null };
+            if ((await verifyToken()) === true) {
+               return { success: true, error: null };
+            }
          }
          console.error('Invalid credentials:', response.data);
          return { success: false, error: 'Invalid credentials' };
@@ -144,7 +148,6 @@ const useAuthHandler = () => {
 
    // Checks if the user is authenticated
    const isAuthenticated = (): boolean => {
-      syncCookiesToLocalStorage();
       return (
          !!localStorage.getItem('jwt') && !!localStorage.getItem('userInfo')
       );
@@ -160,6 +163,8 @@ const useAuthHandler = () => {
       register,
       login,
       logout,
+      user,
+      token,
       isAuthenticated,
       getAuthHeaders,
    };

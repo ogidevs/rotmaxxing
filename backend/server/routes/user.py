@@ -88,7 +88,7 @@ async def auth_google(request: Request):
     )
     response.set_cookie(
         key="userInfo",
-        value=json.dumps(user_dict),
+        value=user_dict,
         max_age=31449600,
         samesite="Lax",
         secure=True
