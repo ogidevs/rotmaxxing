@@ -25,6 +25,7 @@ class UserReturn(BaseModel):
     email: str
     password: Optional[str] = None
     credit: int
+    picture: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -33,5 +34,5 @@ class UserReturn(BaseModel):
     @classmethod
     def from_document(cls, document: User) -> "UserReturn":
         return cls(
-            id=str(document.id), username=document.username, email=document.email, password=document.password, credit=document.credit
+            id=str(document.id), username=document.username, email=document.email, password=document.password, credit=document.credit, picture=document.picture
         )

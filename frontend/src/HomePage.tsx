@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
+import { Button } from '@/components/ui/button';
+import { ProfileHeader } from '@/components/custom/ProfileHeader';
 
 const HomePage: React.FC = () => {
    const API_URL = 'http://localhost:8001';
-   const { logout, getAuthHeaders } = AuthHandler(); // Get the logout function from AuthHandler
+   const { logout, getAuthHeaders, user } = AuthHandler(); // Get the logout function from AuthHandler
    const [text, setText] = useState<string>('');
    const [videoUrl, setVideoUrl] = useState<string>('');
    const [loading, setLoading] = useState<boolean>(false);
@@ -59,6 +60,14 @@ const HomePage: React.FC = () => {
 
    return (
       <div className="flex flex-col items-center justify-center h-screen text-center">
+         {user && (
+            <ProfileHeader
+               email={user.email}
+               username={user.username}
+               profilePicture={user.picture}
+               credits={user.credit}
+            />
+         )}
          <h1>Create Your Brain Rot in Couple of Seconds</h1>
          <textarea
             onBlur={(event) =>
