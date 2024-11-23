@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
 import AuthHandler from './AuthHandler'; // Import the AuthHandler
+import { Lead } from './components/custom/Typography';
 import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 import { useState } from 'react';
@@ -79,8 +80,8 @@ export default function AuthPage() {
             </picture>
          </div>
 
-         <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 bg-white dark:bg-zinc-900 transition-colors duration-300">
-            <div className="w-full max-w-md">
+         <div className="w-full lg:w-[40%] flex flex-col justify-center items-center p-8 bg-zinc-50 dark:bg-zinc-900 transition-colors duration-300">
+            <div className="w-full max-w-md border-2 border-rose-500 rounded-xl py-12 px-8 shadow-[8px_8px_0px_0px_rgba(244,63,94,1)] hover:shadow-[16px_16px_0px_0px_rgba(244,63,94,1)] dark:shadow-[8px_8px_0px_0px_rgba(190,18,60,1)] dark:hover:shadow-[16px_16px_0px_0px_rgba(190,18,60,1)] transition-all bg-zinc-50 dark:bg-zinc-900">
                <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-rose-400 to-rose-500 text-transparent bg-clip-text">
                   {isLogin ? 'Login to Your Account' : 'Create Account'}
                </h1>

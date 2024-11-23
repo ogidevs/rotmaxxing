@@ -139,7 +139,7 @@ export function Lead({
    return (
       <p
          className={cn(
-            'font-body text-zinc-900 dark:text-zinc-50 text-xl text-muted-foreground',
+            'font-body text-zinc-900 dark:text-zinc-50 text-sm text-muted-foreground',
             className
          )}
       >
