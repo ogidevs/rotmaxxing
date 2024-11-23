@@ -26,6 +26,7 @@ class UserResponseSchema(BaseModel):
     username: str
     email: str
     token: Optional[str] = None
+    credit: int
 
     class Config:
         from_attributes = True
