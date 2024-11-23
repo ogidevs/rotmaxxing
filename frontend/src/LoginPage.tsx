@@ -9,6 +9,7 @@ import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 
 export default function AuthPage() {
+   const API_URL = "http://localhost:8001";
    const [darkMode, setDarkMode] = useState(false);
    const [isLogin, setIsLogin] = useState(true); // Track whether it's Login or Register mode
    const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ export default function AuthPage() {
    };
 
    const handleGoogleLogin = () => {
-      window.location.href = '/users/login/google';
+      window.location.href = `${API_URL}/users/login/google`;
    };
 
    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -1,10 +1,11 @@
 # user_routes.py
-import json
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
-from server.auth.auth_bearer import JWTBearer
+from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuthError
+
+import json, os
+
+from server.auth.auth_bearer import JWTBearer
 from server.database import (
     create_user,
     create_user_google,
@@ -76,7 +77,7 @@ async def auth_google(request: Request):
     )
     user_dict = dict(user)
     user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
-    response = RedirectResponse(url="/", status_code=301)
+    response = RedirectResponse(url=os.getenv("FRONTEND_URL"), status_code=302)
     response.headers["Refresh"] = "0; url=/"
     response.set_cookie(
         key="jwt",
