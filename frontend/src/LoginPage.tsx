@@ -140,7 +140,7 @@ export default function AuthPage() {
                         <button
                            type="button"
                            onClick={togglePasswordVisibility}
-                           className="absolute inset-y-0 right-2 flex items-center text-zinc-500 dark:text-zinc-400 bg-transparent border-none outline-none focus:outline-none"
+                           className="absolute inset-y-0 right-0 m-2 flex items-center text-zinc-500 dark:text-zinc-400 bg-transparent border-none outline-none focus:outline-none"
                         >
                            {showPassword ? (
                               <EyeOff className="h-4 w-4 hover:text-zinc-800 dark:hover:text-zinc-200" />
