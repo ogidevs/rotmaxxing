@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
 import AuthHandler from './AuthHandler'; // Import the AuthHandler
+import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
+import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 import logo from './assets/logo.png';
 
 export default function AuthPage() {
@@ -55,6 +57,19 @@ export default function AuthPage() {
                <img src={logo} alt="Logo" className="max-w-full max-h-full" />
             </div>
          </div>
+         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900">
+            <picture>
+               {/* Light theme image */}
+               <source
+                  srcSet={LightLogo}
+                  media="(prefers-color-scheme: light)"
+               />
+               {/* Dark theme image */}
+               <source srcSet={DarkLogo} media="(prefers-color-scheme: dark)" />
+               {/* Fallback for unsupported browsers */}
+               <img src={LightLogo} alt="Themed Image" className="rounded-xl" />
+            </picture>
+         </div>
 
          <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 bg-white dark:bg-zinc-900 transition-colors duration-300">
             <div className="w-full max-w-md">
@@ -80,7 +95,10 @@ export default function AuthPage() {
                      </div>
                   )}
                   <div className="space-y-2">
-                     <Label htmlFor="email" className="text-zinc-800 dark:text-zinc-200">
+                     <Label
+                        htmlFor="email"
+                        className="text-zinc-800 dark:text-zinc-200"
+                     >
                         Email
                      </Label>
                      <Input
@@ -93,7 +111,10 @@ export default function AuthPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <Label htmlFor="password" className="text-zinc-800 dark:text-zinc-200">
+                     <Label
+                        htmlFor="password"
+                        className="text-zinc-800 dark:text-zinc-200"
+                     >
                         Password
                      </Label>
                      <Input
@@ -107,7 +128,10 @@ export default function AuthPage() {
                   </div>
                   {!isLogin && (
                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword" className="text-zinc-800 dark:text-zinc-200">
+                        <Label
+                           htmlFor="confirmPassword"
+                           className="text-zinc-800 dark:text-zinc-200"
+                        >
                            Confirm Password
                         </Label>
                         <Input
@@ -128,7 +152,9 @@ export default function AuthPage() {
                </form>
                <div className="flex justify-between items-center mt-8 text-center flex-col">
                   <p className="text-zinc-800 dark:text-zinc-200">
-                     {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                     {isLogin
+                        ? "Don't have an account?"
+                        : 'Already have an account?'}
                   </p>
                   <Button
                      variant="outline"
@@ -136,12 +162,11 @@ export default function AuthPage() {
                      onClick={() => {
                         setIsLogin(!isLogin);
                         setError('');
-                      }}
+                     }}
                      className="w-full dark:bg-zinc-800 dark:text-zinc-200"
                   >
                      <strong>{isLogin ? 'Register' : 'Login'}</strong>
                   </Button>
-                     
                </div>
 
                <div className="flex justify-center mt-8">
