@@ -4,18 +4,16 @@ import whisper
 output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "uploads"
 
 
-def generate_subtitles(folder_id: str, file_path: str, model="small") -> str:
-    model = whisper.load_model(model)
-    print("A")
+def generate_subtitles(folder_id: str, file_path: str):
+    model = whisper.load_model("small")
     result = model.transcribe(file_path, word_timestamps=True)
-    print("B")
     save_as_srt(result, output_dest / str(folder_id) / "subtitles.srt")
     return output_dest / str(folder_id) / "subtitles.srt"
 
 
 def save_as_srt(transcription, output_dest):
     print(transcription, output_dest)
-    with open(output_dest, "w") as f:
+    with open(output_dest, "w", encoding="utf-8") as f:
         index = 1
         for segment in transcription["segments"]:
             start_time = segment["start"]

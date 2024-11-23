@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator, root_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Dict, Any
 
 
@@ -17,17 +17,18 @@ class UploadSchema(BaseModel):
         description="subtitle_options for the upload.",
         example={
             "font": "Montserrat-VariableFont.ttf",
-            "font_size": 20,
+            "font_size": 40,  # Larger font size for better visibility
             "color": "white",
             "stroke_color": "black",
-            "stroke_width": 2,
-            "bg_color": None,
-            "text_align": "center",
+            "stroke_width": 5,  # Enhance stroke for legibility
             "horizontal_align": "center",
             "vertical_align": "center",
-            "interline": 6,
-            "method": "label",
+            "text_align": "center",
+            "bg_color": None,  # Transparent background
+            "interline": 2,  # Adjust line spacing for readability
+            "method": "caption",  # Automatically size to fit text
             "transparent": True,
+            "duration": 5,  # Default duration (adjust per clip's length)
         },
     )
     video_options: Optional[Dict[str, Any]] = Field(
@@ -38,7 +39,14 @@ class UploadSchema(BaseModel):
             "audio_fadeout": 3,  # Fade out audio for smoother end
             "video_fadein": 3,  # Fade in video for smoother start
             "video_fadeout": 3,  # Fade out video for smoother end
-            "subtitles_position": "top",
+            "subtitles_position": "center",
+        },
+    )
+    audio_options: Optional[Dict[str, Any]] = Field(
+        None,
+        description="audio_options for the upload.",
+        example={
+            "voice": "alloy",
         },
     )
 
@@ -79,6 +87,18 @@ class UploadSchema(BaseModel):
             video_options = {}
         # Merge default video_options with provided values
         values["video_options"] = {**default_video_options, **video_options}
+        return values
+
+    @model_validator(mode="before")
+    def set_default_audio_options(cls, values):
+        default_audio_options = {
+            "voice": "alloy",
+        }
+        audio_options = values.get("audio_options", {})
+        if audio_options is None:
+            audio_options = {}
+        # Merge default audio_options with provided values
+        values["audio_options"] = {**default_audio_options, **audio_options}
         return values
 
     class Config:

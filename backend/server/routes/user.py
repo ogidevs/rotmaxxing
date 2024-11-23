@@ -24,6 +24,8 @@ user_router = APIRouter()
 
 @user_router.post("/register", response_model=UserResponseSchema)
 async def create_user_endpoint(user_data: UserRegisterSchema):
+    if user_data.password != user_data.confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
     user_data.password = hash_password(user_data.password)
     user = await create_user(user_data)
     user_dict = dict(user)

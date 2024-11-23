@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi.responses import FileResponse
 from server.utils.text_to_speech import text_to_speech
 from server.utils.generate_subtitles import generate_subtitles
-from server.utils.squash_video import finalize_video
+from server.utils.generate_final_video import finalize_video
 from server.schemas.upload import UploadSchema
 import uuid, os
 
@@ -38,16 +38,20 @@ async def upload_file(upload: UploadSchema):
     random_background_video = background_videos_path / "mc_video.mp4"
     folder_path = Path(os.getcwd() + f"/static/uploads/{generated_id}")
     folder_path.mkdir(parents=True, exist_ok=True)
-    speech_path = text_to_speech(text=upload.text, folder_id=generated_id)
+    speech_path = text_to_speech(
+        text=upload.text, folder_id=generated_id, voice=upload.audio_options["voice"]
+    )
     subtitles_path = generate_subtitles(
-        folder_id=generated_id, file_path=str(speech_path)
+        folder_id=generated_id,
+        file_path=str(speech_path),
     )
     result = finalize_video(
         video_path=random_background_video,
         audio_path=str(speech_path),
         subtitles_path=str(subtitles_path),
         folder_id=generated_id,
-        options=upload.subtitle_options,
+        subtitles_options=upload.subtitle_options,
+        video_options=upload.video_options,
     )
 
     return FileResponse(result, media_type="video/mp4")
