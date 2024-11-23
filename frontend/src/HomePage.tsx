@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
 
 const HomePage: React.FC = () => {
+    const API_URL = "http://localhost:8001";
     const { logout, getAuthHeaders } = AuthHandler(); // Get the logout function from AuthHandler
     const [text, setText] = useState<string>('');
     const [videoUrl, setVideoUrl] = useState<string>('');
@@ -10,7 +11,7 @@ const HomePage: React.FC = () => {
 
     const handleClick = async () => {
         setLoading(true);
-        const response = await fetch('/uploads/generateBrainRot', {
+        const response = await fetch(`${API_URL}/uploads/generateBrainRot`, {
             method: 'POST',
             headers: {
                 ...getAuthHeaders(), // Add the authorization headers to the request

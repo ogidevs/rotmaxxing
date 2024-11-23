@@ -1,8 +1,8 @@
 from pathlib import Path
 from fastapi import HTTPException
 from openai import OpenAI
-
-client = OpenAI()
+import os
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "uploads"
 

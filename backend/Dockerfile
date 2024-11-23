@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy the Python requirements file into the container
 COPY requirements.txt /app/
+COPY .env /app/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -19,8 +20,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the FastAPI application code into the container
 COPY . /app/
 
-# Expose port 8000 for FastAPI
-EXPOSE 8000
+# Expose port 8001 for FastAPI
+EXPOSE 8001
+
 
 # Command to run FastAPI app with Uvicorn
-CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8001"]

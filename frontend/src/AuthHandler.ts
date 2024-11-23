@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 
 // Replace with your API URL
-const API_URL = "http://localhost:8000";
+const API_URL = "http://localhost:8001";
 
 const useAuthHandler = () => {
   // Effect to verify token and sync cookies when the component mounts

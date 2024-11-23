@@ -4,17 +4,26 @@ services:
   fastapi:
     build: ./backend
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - shared_data:/backend/static  # Mount shared volume to /app/static in the FastAPI container
     environment:
       - OPENAI_API_KEY=XXXX
       - MONGO_URI=mongodb://localhost:27017/brainrot
-      - ACTIX_PORT=6969
-      - JWT_SECRET=XXXXX
+      - JWT_SECRET=XXXX
       - JWT_ALGORITHM=XXXX
+      - GOOGLE_CLIENT_ID=XXXX
+      - GOOGLE_CLIENT_SECRET=XXXX
     depends_on:
       - mongodb
+    networks:
+      - backend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - fastapi
     networks:
       - backend
   mongodb:

@@ -34,7 +34,7 @@ app.include_router(upload_router, prefix="/uploads", tags=["uploads"])
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 origins = [
-    "localhost",
+    "*"
 ]
 
 app.add_middleware(
@@ -44,15 +44,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="frontend")
-
-@app.get("/{full_path:path}")
-async def serve_react_app(full_path: str):
-    return app.responses.FileResponse("../frontend/dist/index.html")
-
-@app.get("/assets/{filename}")
-async def serve_assets(filename: str):
-    return app.responses.FileResponse(f"../frontend/dist/assets/{filename}")
 
 @app.exception_handler(404)
 async def not_found_handler(request, exc):
