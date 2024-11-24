@@ -1,5 +1,5 @@
 # user_routes.py
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
 from authlib.integrations.starlette_client import OAuthError
 
@@ -125,11 +125,10 @@ async def auth_google(request: Request):
     return response 
 
 @user_router.post("/logout", dependencies=[Depends(JWTBearer())])
-async def logout(token: str = Depends(JWTBearer())):
-    response = RedirectResponse(url="/")
+async def logout(request: Request, response: Response, token: str = Depends(JWTBearer())):
     response.delete_cookie("jwt")
-    response.delete_cookie("refresh_token")  # Ensure refresh token is invalidated
-    return response
+    response.delete_cookie("refresh_token")
+    return {"message": "Successfully logged out"}
 
 
 @user_router.get(

@@ -37,7 +37,7 @@ async def serve_subtitles(folder_id: str, request : Request):
     return FileResponse(file_path)
 
 @upload_router.post("/generateAudio", dependencies=[Depends(JWTBearer())])
-@limiter.limit("10/minute")
+@limiter.limit("33/minute")
 async def upload_file(upload: GenerateAudioSchema, request : Request, token: dict = Depends(JWTBearer())):
     decoded_token = decode_jwt(token)
     user = await get_user(decoded_token["user_id"])
@@ -64,7 +64,6 @@ async def upload_file(upload: GenerateAudioSchema, request : Request, token: dic
     speech_path, duration = await text_to_speech(
         text=upload.text, folder_id=generated_id, voice=upload.audio_options.voice
     )
-    
     result = await add_audio_to_video(
         video_path=random_background_video,
         audio_path=str(speech_path),
@@ -76,7 +75,7 @@ async def upload_file(upload: GenerateAudioSchema, request : Request, token: dic
 
 
 @upload_router.post("/generateSubtitles", dependencies=[Depends(JWTBearer())])
-@limiter.limit("10/minute")
+@limiter.limit("33/minute")
 async def generate_subtitles_request(upload: GenerateSubtitlesSchema, request : Request, token: dict = Depends(JWTBearer())):
     decoded_token = decode_jwt(token)
     user = await get_user(decoded_token["user_id"])

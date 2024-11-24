@@ -5,7 +5,7 @@ export default function ThemeToggler() {
    const { theme, toggleTheme } = useTheme();
 
    return (
-      <div className="absolute top-0 right-0 p-4">
+      <div>
          <button
             onClick={toggleTheme}
             className="p-2 rounded-full transition-colors duration-300 ease-in-out bg-rose-200 hover:bg-rose-400 outline-none focus:outline-none border-none"

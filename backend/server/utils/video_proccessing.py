@@ -1,7 +1,5 @@
 from pathlib import Path
-from pysrt import open as open_srt
-import random
-import ffmpeg, subprocess
+import ffmpeg
 import asyncio
 
 

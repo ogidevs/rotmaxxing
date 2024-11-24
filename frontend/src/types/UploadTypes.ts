@@ -23,6 +23,13 @@ export interface SubtitleOptions {
    MarginL: number;
    MarginR: number;
    MarginV: number;
+   OutlineColour: string;
+   Underline: number;
+   StrikeOut: number;
+   ScaleX: number;
+   ScaleY: number;
+   Spacing: number;
+   Angle: number;
 }
 
 export interface VideoOptions {

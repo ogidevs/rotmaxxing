@@ -5,6 +5,7 @@ import { ProfileHeader } from '@/components/custom/ProfileHeader';
 import UploadFilters from '@/components/custom/UploadFilters';
 import axios from 'axios';
 import ASS from 'assjs';
+import { Loader } from 'lucide-react';
 
 const HomePage: React.FC = () => {
    const [filters, setFilters] = useState<any>({});
@@ -12,12 +13,14 @@ const HomePage: React.FC = () => {
    const { user, fetchMe } = AuthHandler();
    const [text, setText] = useState<string>('');
    const [folderId, setFolderId] = useState<string | null>(null);
-   const [videoUrl, setVideoUrl] = useState<string>('');
+   const [videoUrl, setVideoUrl] = useState<string | null>(null);
    const [loading, setLoading] = useState<boolean>(false);
    const assRef = useRef<ASS | null>(null); // Reference to store the ASS instance
 
    const generatePreivew = async () => {
       setLoading(true);
+      setVideoUrl(null);
+
       const result = await fetchVideoWithAudio();
       if (!result) {
          setLoading(false);
@@ -29,6 +32,8 @@ const HomePage: React.FC = () => {
          return;
       }
       const videoUrl = URL.createObjectURL(videoBlob);
+
+      setVideoUrl(videoUrl);
 
       const subtitles = await fetchSubtitles(filename);
       if (!subtitles) {
@@ -62,7 +67,6 @@ const HomePage: React.FC = () => {
 
       fetchMe();
       setFolderId(filename);
-      setVideoUrl(videoUrl);
    };
 
    const fetchVideoWithAudio = async () => {
@@ -169,30 +173,50 @@ const HomePage: React.FC = () => {
    };
 
    return (
-      <>
-         {user && (
-            <ProfileHeader
-               email={user.email}
-               username={user.username}
-               profilePicture={user.picture}
-               credit={user.credit}
-            />
-         )}
-         <div className="flex flex-col items-center justify-center text-center p-6 bg-white dark:bg-zinc-900 min-h-screen transition-colors duration-100">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+      <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-colors duration-100">
+         <div className="flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
+            {user && (
+               <ProfileHeader
+                  email={user.email}
+                  username={user.username}
+                  profilePicture={user.picture}
+                  credit={user.credit}
+               />
+            )}
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white m-6">
                Create Your Brain Rot in Couple of Seconds
             </h1>
-            <UploadFilters filters={filters} setFilters={setFilters} />
             <textarea
                onBlur={(event) => {
                   setFolderId(null);
                   setText((event.target as HTMLTextAreaElement).value);
                }}
+               aria-label="Type here..."
                placeholder="Type here..."
-               className="w-1/2 h-40 p-4 m-4 border border-gray-300 rounded-lg text-gray-900 bg-gray-100 dark:text-white dark:bg-gray-800 dark:border-gray-700"
+               className="text-white dark:text-zinc-200 w-1/2 h-32 p-2 border-2 border-rose-500 rounded-xl m-4"
             ></textarea>
-            <div id="player" className="relative">
-               <video id="video" src={videoUrl} controls></video>
+
+            <div className="flex flex-row">
+               <UploadFilters filters={filters} setFilters={setFilters} />
+               <Button
+                  onClick={generatePreivew}
+                  className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
+               >
+                  Generate Brain Rot
+               </Button>
+               <Button
+                  disabled={videoUrl != null ? false : true}
+                  onClick={downloadVideo}
+                  className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
+               >
+                  Download
+               </Button>
+            </div>
+            <div
+               id="player"
+               className={`relative ${!videoUrl ? 'hidden' : ''}`}
+            >
+               <video id="video" src={videoUrl || undefined} controls></video>
                <div
                   id="ass-container"
                   style={{
@@ -205,21 +229,9 @@ const HomePage: React.FC = () => {
                   }}
                ></div>
             </div>
-            <Button
-               onClick={generatePreivew}
-               className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
-            >
-               Generate Brain Rot
-            </Button>
-            <Button
-               onClick={downloadVideo}
-               className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
-            >
-               Download
-            </Button>
-            {loading && <p className="text-rose-500">Loading...</p>}
+            {loading && <Loader className="animate-spin" />}
          </div>
-      </>
+      </div>
    );
 };
 

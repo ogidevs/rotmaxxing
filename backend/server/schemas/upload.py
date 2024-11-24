@@ -77,6 +77,41 @@ class SubtitleOptions(BaseModel):
         description="The vertical margin (distance from bottom).",
         example=10,
     )
+    OutlineColour: str = Field(
+        "&H000000&",
+        description="The outline color in hexadecimal.",
+        example="&H000000&",
+    )
+    Underline: int = Field(
+        0,
+        description="The underline text (0 or 1).",
+        example=0,
+    )
+    StrikeOut: int = Field(
+        0,
+        description="The strikeout text (0 or 1).",
+        example=0,
+    )
+    ScaleX: int = Field(
+        100,
+        description="The horizontal scaling percentage.",
+        example=100,
+    )
+    ScaleY: int = Field(
+        100,
+        description="The vertical scaling percentage.",
+        example=100,
+    )
+    Spacing: int = Field(
+        0,
+        description="The spacing between characters.",
+        example=0,
+    )
+    Angle: int = Field(
+        0,
+        description="The rotation angle of the text.",
+        example=0,
+    )
 
 class VideoOptions(BaseModel):
     audio_fadein: int = Field(

@@ -8,9 +8,23 @@ const API_URL = 'http://localhost:8001';
 const useAuthHandler = () => {
    const [user, setUser] = useState<UserType | null>(null);
    const [authed, setAuthed] = useState<boolean | null>(null);
-   const isInitialized = useRef(false); // Tracks if auth has been initialized
-   const isVerifying = useRef(false); // Tracks active `verifyToken` calls
-   const isRefreshing = useRef(false); // Tracks active `refreshAccessToken` calls
+   const isInitialized = useRef(false);
+   const isVerifying = useRef(false);
+   const isRefreshing = useRef(false);
+   const isLoggingOut = useRef(false);
+
+   axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+         if (error.response?.status === 403) {
+            if (isLoggingOut.current) return false;
+            const refreshed = await refreshAccessToken();
+            if (!refreshed) logout();
+            window.location.href = '/';
+         }
+         return Promise.reject(error);
+      }
+   );
 
    useEffect(() => {
       if (isInitialized.current) return;
@@ -21,19 +35,14 @@ const useAuthHandler = () => {
          }
          isInitialized.current = true;
 
-         const isVerified = await verifyToken();
-         if (!isVerified) {
-            console.warn('Token verification failed. Attempting refresh...');
-            const refreshed = await refreshAccessToken();
-            if (!refreshed) logout();
-         }
+         await verifyToken();
       };
 
       initializeAuth();
-   }, []); // Empty dependency array ensures this runs only once on mount
+   }, []);
 
    const refreshAccessToken = async (): Promise<boolean> => {
-      if (isRefreshing.current) return false; // Prevent multiple simultaneous refresh calls
+      if (isRefreshing.current) return false;
       isRefreshing.current = true;
 
       try {
@@ -44,7 +53,6 @@ const useAuthHandler = () => {
          );
          if (response.data.status === 'success' && response.status === 201) {
             console.log('New token received');
-            await verifyToken(); // Re-verify after refresh
             return true;
          }
          console.error('No new token received during refresh');
@@ -163,13 +171,15 @@ const useAuthHandler = () => {
       }
    };
 
-   const logout = () => {
+   const logout = async () => {
+      isLoggingOut.current = true;
       try {
          axios.post(`${API_URL}/users/logout`, {}, { withCredentials: true });
+         window.location.href = '/';
+         return;
       } catch (error) {
          console.error('Failed to logout:', error);
       }
-      window.location.href = '/';
    };
 
    const hasAuthCookie = () => {
@@ -181,7 +191,6 @@ const useAuthHandler = () => {
       login,
       register,
       fetchMe,
-      refreshAccessToken,
       user,
       authed,
    };

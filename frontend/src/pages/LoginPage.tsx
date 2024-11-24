@@ -193,8 +193,9 @@ export default function AuthPage() {
                   </Button>
                </div>
             </div>
-
-            <ThemeToggler />
+            <div className="absolute top-4 right-4">
+               <ThemeToggler />
+            </div>
          </div>
       </div>
    );
