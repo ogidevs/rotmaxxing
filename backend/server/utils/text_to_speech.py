@@ -16,7 +16,8 @@ async def text_to_speech(text: str, voice: str = "alloy", folder_id: str = None)
         # Using OpenAI TTS to generate audio
         response = client.audio.speech.create(model="tts-1", voice=voice, input=text, response_format="wav")
         response.stream_to_file(speech_file_path)
-        return speech_file_path
+        
+        return speech_file_path, 20
     
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))

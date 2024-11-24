@@ -1,17 +1,15 @@
 export interface SubtitleOptions {
-   font: string;
-   FontSize: number;
+   Name: string;
+   Fontname: string;
+   Fontsize: number;
    PrimaryColour: string;
    SecondaryColour: string;
-   Outline: number;
-   OutlineColour: string;
-   Shadow: number;
-   ShadowColour: string;
+   BackColour: string;
    Bold: number;
    Italic: number;
-   MarginV: number;
-   Underline: number;
-   StrikeOut: number;
+   BorderStyle: number;
+   Outline: number;
+   Shadow: number;
    Alignment:
       | 'bottom-left'
       | 'bottom-center'
@@ -22,6 +20,9 @@ export interface SubtitleOptions {
       | 'top-left'
       | 'top-center'
       | 'top-right';
+   MarginL: number;
+   MarginR: number;
+   MarginV: number;
 }
 
 export interface VideoOptions {

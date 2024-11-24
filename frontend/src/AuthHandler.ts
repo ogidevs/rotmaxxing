@@ -80,6 +80,17 @@ const useAuthHandler = () => {
       }
    };
 
+   const fetchMe = async () => {
+      try {
+         const response = await axios.get(`${API_URL}/users/me`, {
+            withCredentials: true,
+         });
+         setUser(response.data);
+      } catch (error) {
+         console.error('Failed to fetch user data:', error);
+      }
+   };
+
    // Registers a new user
    const register = async (
       username: string,
@@ -169,7 +180,7 @@ const useAuthHandler = () => {
       logout,
       login,
       register,
-      verifyToken,
+      fetchMe,
       refreshAccessToken,
       user,
       authed,

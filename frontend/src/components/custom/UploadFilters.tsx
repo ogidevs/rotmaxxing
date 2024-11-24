@@ -23,20 +23,21 @@ interface UploadFiltersProps {
 
 const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
    const [subtitleOptions, setSubtitleOptions] = useState<SubtitleOptions>({
-      font: 'Montserrat-VariableFont.ttf',
-      FontSize: 24,
+      Name: 'Default',
+      Fontname: 'Montserrat-VariableFont.ttf',
+      Fontsize: 24,
       PrimaryColour: '&HFFFFFF&',
       SecondaryColour: '&HFF0000&',
-      Outline: 2,
-      OutlineColour: '&H000000&',
-      Shadow: 1,
-      ShadowColour: '&H000000&',
+      BackColour: '&H000000&',
       Bold: 1,
       Italic: 1,
-      MarginV: 10,
-      Underline: 1,
-      StrikeOut: 0,
+      BorderStyle: 3,
+      Outline: 2,
+      Shadow: 1,
       Alignment: 'center',
+      MarginL: 30,
+      MarginR: 30,
+      MarginV: 30,
    });
 
    const [videoOptions, setVideoOptions] = useState<VideoOptions>({
@@ -88,17 +89,17 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
             <h2 className="text-xl font-bold mb-4">Subtitle Options</h2>
             <Input
                type="text"
-               name="font"
+               name="Fontname"
                placeholder="Font"
-               value={subtitleOptions.font}
+               value={subtitleOptions.Fontname}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
             <Input
                type="number"
-               name="FontSize"
+               name="Fontsize"
                placeholder="Font Size"
-               value={subtitleOptions.FontSize}
+               value={subtitleOptions.Fontsize}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
@@ -119,34 +120,10 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
             <Input
-               type="number"
-               name="Outline"
-               placeholder="Outline"
-               value={subtitleOptions.Outline}
-               onChange={handleSubtitleChange}
-               className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
-            />
-            <Input
                type="text"
-               name="OutlineColour"
-               placeholder="Outline Colour"
-               value={subtitleOptions.OutlineColour}
-               onChange={handleSubtitleChange}
-               className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
-            />
-            <Input
-               type="number"
-               name="Shadow"
-               placeholder="Shadow"
-               value={subtitleOptions.Shadow}
-               onChange={handleSubtitleChange}
-               className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
-            />
-            <Input
-               type="text"
-               name="ShadowColour"
-               placeholder="Shadow Colour"
-               value={subtitleOptions.ShadowColour}
+               name="BackColour"
+               placeholder="Back Colour"
+               value={subtitleOptions.BackColour}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
@@ -167,26 +144,26 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
             <Input
-               type="number"
-               name="MarginV"
-               placeholder="Margin V"
-               value={subtitleOptions.MarginV}
+               type="text"
+               name="BorderStyle"
+               placeholder="Border Style"
+               value={subtitleOptions.BorderStyle}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
             <Input
                type="number"
-               name="Underline"
-               placeholder="Underline"
-               value={subtitleOptions.Underline}
+               name="Outline"
+               placeholder="Outline"
+               value={subtitleOptions.Outline}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
             <Input
                type="number"
-               name="StrikeOut"
-               placeholder="Strike Out"
-               value={subtitleOptions.StrikeOut}
+               name="Shadow"
+               placeholder="Shadow"
+               value={subtitleOptions.Shadow}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
@@ -195,6 +172,30 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                name="Alignment"
                placeholder="Alignment"
                value={subtitleOptions.Alignment}
+               onChange={handleSubtitleChange}
+               className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
+            />
+            <Input
+               type="number"
+               name="MarginL"
+               placeholder="Margin L"
+               value={subtitleOptions.MarginL}
+               onChange={handleSubtitleChange}
+               className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
+            />
+            <Input
+               type="number"
+               name="MarginR"
+               placeholder="Margin R"
+               value={subtitleOptions.MarginR}
+               onChange={handleSubtitleChange}
+               className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
+            />
+            <Input
+               type="number"
+               name="MarginV"
+               placeholder="Margin V"
+               value={subtitleOptions.MarginV}
                onChange={handleSubtitleChange}
                className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
             />
