@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
+import AuthHandler from '@/AuthHandler'; // Import AuthHandler for authentication logic
 import { Button } from '@/components/ui/button';
 import { ProfileHeader } from '@/components/custom/ProfileHeader';
+import UploadFilters from '@/components/custom/UploadFilters';
 import axios from 'axios';
 
 const HomePage: React.FC = () => {
+   const [filters, setFilters] = useState<any>({});
    const API_URL = 'http://localhost:8001';
    const { user, verifyToken } = AuthHandler(); // Get the logout function from AuthHandler
    const [text, setText] = useState<string>('');
@@ -19,28 +21,13 @@ const HomePage: React.FC = () => {
             text: text,
             title: 'Your Title',
             subtitle_options: {
-               color: 'white',
-               duration: 1,
-               font: 'Montserrat-VariableFont.ttf',
-               font_size: 40,
-               horizontal_align: 'center',
-               interline: 2,
-               method: 'caption',
-               stroke_color: 'black',
-               stroke_width: 5,
-               text_align: 'center',
-               transparent: true,
-               vertical_align: 'center',
+               ...filters.subtitleOptions,
             },
             video_options: {
-               audio_fadein: 3,
-               audio_fadeout: 3,
-               subtitles_position: 'center',
-               video_fadein: 3,
-               video_fadeout: 3,
+               ...filters.videoOptions,
             },
             audio_options: {
-               voice: 'alloy',
+               ...filters.audioOptions,
             },
          },
          {
@@ -64,7 +51,7 @@ const HomePage: React.FC = () => {
    };
 
    return (
-      <div className="flex flex-col items-center justify-center h-screen text-center">
+      <>
          {user && (
             <ProfileHeader
                email={user.email}
@@ -73,27 +60,37 @@ const HomePage: React.FC = () => {
                credit={user.credit}
             />
          )}
-         <h1>Create Your Brain Rot in Couple of Seconds</h1>
-         <textarea
-            onBlur={(event) =>
-               setText((event.target as HTMLTextAreaElement).value)
-            }
-            placeholder="Type here..."
-            className="w-1/2 h-1/2 p-4 m-4 border border-gray-300 rounded-lg text-white bg-gray-800"
-         ></textarea>
-         {videoUrl && (
-            <iframe
-               src={videoUrl}
-               width="560"
-               height="315"
-               allowFullScreen
-            ></iframe>
-         )}
-         <Button onClick={handleClick} className="m-4" disabled={loading}>
-            Generate Brain Rot
-         </Button>
-         {loading && <p>Loading...</p>}
-      </div>
+         <div className="flex flex-col items-center justify-center text-center p-6 bg-white dark:bg-zinc-900 min-h-screen transition-colors duration-100">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+               Create Your Brain Rot in Couple of Seconds
+            </h1>
+            <UploadFilters filters={filters} setFilters={setFilters} />
+            <textarea
+               onBlur={(event) =>
+                  setText((event.target as HTMLTextAreaElement).value)
+               }
+               placeholder="Type here..."
+               className="w-1/2 h-40 p-4 m-4 border border-gray-300 rounded-lg text-gray-900 bg-gray-100 dark:text-white dark:bg-gray-800 dark:border-gray-700"
+            ></textarea>
+            {videoUrl && (
+               <iframe
+                  src={videoUrl}
+                  width="560"
+                  height="315"
+                  allowFullScreen
+                  className="my-4 border-2 border-rose-500 rounded-lg"
+               ></iframe>
+            )}
+            <Button
+               onClick={handleClick}
+               className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
+               disabled={loading}
+            >
+               Generate Brain Rot
+            </Button>
+            {loading && <p className="text-rose-500">Loading...</p>}
+         </div>
+      </>
    );
 };
 

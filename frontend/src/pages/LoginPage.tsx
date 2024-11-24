@@ -1,17 +1,21 @@
+import { useState } from 'react';
+
+import AuthHandler from '@/AuthHandler';
+
+import { useTheme } from '@/contexts/ThemeContext';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
-import AuthHandler from './AuthHandler'; // Import the AuthHandler
 import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
-import { useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { GoogleLoginButton } from '@/components/custom/GoogleLoginButton';
+import ThemeToggler from '@/components/custom/ThemeToggler';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function AuthPage() {
+   const { theme } = useTheme();
    const API_URL = 'http://localhost:8001';
-   const [darkMode, setDarkMode] = useState(false);
    const [isLogin, setIsLogin] = useState(true); // Track whether it's Login or Register mode
    const [email, setEmail] = useState('');
    const [username, setUsername] = useState(''); // For registration
@@ -20,10 +24,6 @@ export default function AuthPage() {
    const [showPassword, setShowPassword] = useState(false); // For displaying password to a user
    const [error, setError] = useState('');
    const { login, register } = AuthHandler(); // Use login and register functions from AuthHandler
-
-   const toggleDarkMode = () => {
-      setDarkMode(!darkMode);
-   };
 
    const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
@@ -63,9 +63,9 @@ export default function AuthPage() {
 
    return (
       <div
-         className={`flex min-h-screen ${darkMode ? 'dark bg-zinc-900' : ''}`}
+         className={`flex min-h-screen transition-colors duration-100 ${theme === 'dark' ? 'dark bg-zinc-900' : ''}`}
       >
-         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 transition-colors duration-300 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900 m-5">
+         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900 m-5">
             <picture className="flex items-center justify-center h-full">
                {/* Light theme image */}
                <source
@@ -79,7 +79,7 @@ export default function AuthPage() {
             </picture>
          </div>
 
-         <div className="w-full lg:w-[40%] flex flex-col justify-center items-center p-8 bg-zinc-50 dark:bg-zinc-900 transition-colors duration-300">
+         <div className="w-full lg:w-[40%] flex flex-col justify-center items-center p-8">
             <div className="w-full max-w-md border-2 border-rose-500 rounded-xl py-12 px-8 shadow-[8px_8px_0px_0px_rgba(244,63,94,1)] hover:shadow-[16px_16px_0px_0px_rgba(244,63,94,1)] dark:shadow-[8px_8px_0px_0px_rgba(190,18,60,1)] dark:hover:shadow-[16px_16px_0px_0px_rgba(190,18,60,1)] transition-all bg-zinc-50 dark:bg-zinc-900">
                <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-rose-400 to-rose-500 text-transparent bg-clip-text">
                   {isLogin ? 'Login to Your Account' : 'Create Account'}
@@ -192,23 +192,9 @@ export default function AuthPage() {
                      <strong>{isLogin ? 'Register' : 'Login'}</strong>
                   </Button>
                </div>
-
-               <div className="flex justify-center mt-8">
-                  <Button
-                     variant="outline"
-                     size="icon"
-                     onClick={toggleDarkMode}
-                     className="w-full dark:bg-zinc-800 dark:text-zinc-200"
-                  >
-                     {darkMode ? (
-                        <Sun className="h-[1.2rem] w-[1.2rem]" />
-                     ) : (
-                        <Moon className="h-[1.2rem] w-[1.2rem]" />
-                     )}
-                     <span className="sr-only">Toggle dark mode</span>
-                  </Button>
-               </div>
             </div>
+
+            <ThemeToggler />
          </div>
       </div>
    );

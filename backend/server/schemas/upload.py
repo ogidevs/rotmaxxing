@@ -94,11 +94,6 @@ class VideoOptions(BaseModel):
         description="Fade out video for smoother end.",
         example=3,
     )
-    subtitles_position: str = Field(
-        "top",
-        description="The position of the subtitles (top or center).",
-        example="top",
-    )
     
 class AudioOptions(BaseModel):
     voice: str = Field(

@@ -1,8 +1,17 @@
 import React from 'react';
+import AuthHandler from '@/AuthHandler';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import 'tailwindcss/tailwind.css';
-import { Button } from '../ui/button';
-import AuthHandler from '../../AuthHandler';
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuLabel,
+   DropdownMenuSeparator,
+   DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import ThemeToggler from '@/components/custom/ThemeToggler';
 
 interface ProfileHeaderProps {
    email: string;
@@ -19,24 +28,38 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 }) => {
    const { logout } = AuthHandler();
    return (
-      <div className="flex items-center flex-wrap justify-center md:justify-start md:space-x-4 p-4">
-         <Avatar>
-            <AvatarImage src={profilePicture} />
-            <AvatarFallback>
-               <img
-                  src={`https://ui-avatars.com/api/?name=${username}`}
-                  alt="User PFP"
-               />
-            </AvatarFallback>
-         </Avatar>
-         <div className="m-4">
-            <h2 className="text-xl font-semibold">{username}</h2>
-            <p className="text-gray-600">{email}</p>
-            <p className="text-gray-600">Credit: {credit}</p>
+      <div className="w-full bg-white p-4 shadow-md transition-colors duration-100 bg-transparent dark:bg-zinc-900">
+         <div className="flex items-center justify-between">
+            <DropdownMenu>
+               <DropdownMenuTrigger className="cursor-pointer border-none outline-none focus:outline-none bg-transparent">
+                  <Avatar>
+                     <AvatarImage
+                        src={profilePicture}
+                        className="bg-gray-200 dark:bg-gray-800"
+                     />
+                     <AvatarFallback>
+                        <img
+                           src={`https://ui-avatars.com/api/?name=${username}`}
+                           alt="User PFP"
+                        />
+                     </AvatarFallback>
+                  </Avatar>
+               </DropdownMenuTrigger>
+               <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled>{username}</DropdownMenuItem>
+                  <DropdownMenuItem disabled>{email}</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Credit: {credit}</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer" onClick={logout}>
+                     Logout
+                  </DropdownMenuItem>
+               </DropdownMenuContent>
+            </DropdownMenu>
+            <ThemeToggler />
          </div>
-         <Button onClick={logout} className="m-4">
-            Logout
-         </Button>
       </div>
    );
 };

@@ -97,6 +97,9 @@ const useAuthHandler = () => {
                confirm_password: passwordConfirm,
             },
             {
+               headers: {
+                  'Content-Type': 'application/json',
+               },
                withCredentials: true,
             }
          );
@@ -128,6 +131,9 @@ const useAuthHandler = () => {
                password,
             },
             {
+               headers: {
+                  'Content-Type': 'application/json',
+               },
                withCredentials: true,
             }
          );

@@ -56,10 +56,10 @@ async def finalize_video(
         video_input_stream = ffmpeg.input(str(video_path), ss=video_start, t=video_duration)
         video_input_stream = video_input_stream.filter('subtitles', filename=str(subtitles_path).replace("\\", "/"), force_style=subtitle_style)
         video_input_stream = video_input_stream.filter('fade', type='in', start_time=0, duration=fadein_duration)
-        video_input_stream = video_input_stream.filter('fade', type='out', start_time=video_duration - fadeout_duration, duration=fadeout_duration)
+        video_input_stream = video_input_stream.filter('fade', type='out', start_time=max(0, video_duration - audio_fadeout), duration=fadeout_duration)
         audio_input_stream = ffmpeg.input(str(audio_path))
         audio_input_stream = audio_input_stream.filter('afade', type='in', start_time=0, duration=audio_fadein)
-        audio_input_stream = audio_input_stream.filter('afade', type='out', start_time=video_duration - audio_fadeout, duration=audio_fadeout)
+        audio_input_stream = audio_input_stream.filter('afade', type='out', start_time=max(0, video_duration - audio_fadeout), duration=audio_fadeout)
         ffmpeg.output(video_input_stream, audio_input_stream, str(output_file), preset="ultrafast").run(overwrite_output=True)
         return str(output_file)
 
