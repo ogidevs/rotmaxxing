@@ -1,6 +1,6 @@
 # user_routes.py
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from authlib.integrations.starlette_client import OAuthError
 
 import json, os
@@ -33,24 +33,54 @@ user_router = APIRouter()
 async def register_user_endpoint(user_data: UserRegisterSchema):
     if user_data.password != user_data.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
+    
     user = await create_user(user_data)
     user_dict = dict(user)
-    user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
-    return user_dict
+    tokens = sign_jwt(user_dict["id"])
+    response = JSONResponse(content=user_dict, status_code=201)
+    response.set_cookie(
+        key="refresh_token",
+        value=tokens["refresh_token"],
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+    )
+    response.set_cookie(
+        key="jwt",
+        value=tokens["access_token"],
+        samesite="Lax",
+        secure=True,
+    )
+    return response
 
 
 @user_router.post("/login", response_model=UserResponseSchema)
 async def login_user_endpoint(user_data: UserLoginSchema):
-    print("A")
     user = await get_user_by_email(user_data.email)
-    print(user)
-    if user == None:
+    if user is None:
         raise HTTPException(status_code=400, detail="User not found")
+    
     user_dict = dict(user)
     if not await verify_password(user_data.password, user_dict["password"]):
         raise HTTPException(status_code=400, detail="Invalid password")
-    user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
-    return user_dict
+    
+    tokens = sign_jwt(user_dict["id"])
+    response = JSONResponse(content=user_dict, status_code=201)
+    response.set_cookie(
+        key="jwt",
+        value=tokens["access_token"],
+        samesite="Lax",
+        secure=True,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=tokens["refresh_token"],
+        httponly=True,
+        samesite="Lax",
+        secure=True,
+    )
+    
+    return response
 
 
 @user_router.get("/login/google", include_in_schema=False)
@@ -76,31 +106,29 @@ async def auth_google(request: Request):
         )
     )
     user_dict = dict(user)
-    user_dict["token"] = sign_jwt(user_dict["id"])["access_token"]
+    tokens = sign_jwt(user_dict["id"])
+    user_dict.update(tokens)
     response = RedirectResponse(url=os.getenv("FRONTEND_URL"), status_code=302)
-    response.headers["Refresh"] = "0; url=/"
     response.set_cookie(
         key="jwt",
-        value=user_dict["token"],
-        max_age=31449600,
+        value=tokens["access_token"],
         samesite="Lax",
         secure=True,
     )
     response.set_cookie(
-        key="userInfo",
-        value=user_dict,
-        max_age=31449600,
+        key="refresh_token",
+        value=tokens["refresh_token"],
         samesite="Lax",
-        secure=True
+        secure=True,
+        httponly=True,  # Ensure it's inaccessible to JavaScript
     )
     return response 
 
-@user_router.post(
-    "/logout", include_in_schema=False, dependencies=[Depends(JWTBearer())]
-)
-async def logout():
+@user_router.post("/logout", dependencies=[Depends(JWTBearer())])
+async def logout(token: str = Depends(JWTBearer())):
     response = RedirectResponse(url="/")
-    response.delete_cookie("access_token")
+    response.delete_cookie("jwt")
+    response.delete_cookie("refresh_token")  # Ensure refresh token is invalidated
     return response
 
 
@@ -110,11 +138,9 @@ async def logout():
 async def get_user_endpoint(token: str = Depends(JWTBearer())):
     decoded_token = decode_jwt(token)
     user = await get_user(decoded_token["user_id"])
-    user_dict = dict(user)
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
-    user_dict["token"] = token
-    return user_dict
+    return user
 
 
 @user_router.patch(
@@ -128,11 +154,39 @@ async def update_user_endpoint(
     return user
 
 @user_router.get("/verify", response_model=UserResponseSchema)
-async def verify_user_endpoint(token: str = Depends(JWTBearer())):
+async def verify_user_endpoint(request: Request, token: str = Depends(JWTBearer())):
     decoded_token = decode_jwt(token)
     user = await get_user(decoded_token["user_id"])
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
-    user_dict = dict(user)
-    user_dict["token"] = token
-    return user_dict
+    return user
+
+@user_router.post("/refresh")
+async def refresh_access_token(request: Request):
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Refresh token not found")
+
+    decoded_refresh = decode_jwt(refresh_token)
+    if not decoded_refresh:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+    
+    user_id = decoded_refresh["user_id"]
+    new_tokens = sign_jwt(user_id)
+    
+    response = JSONResponse(content={"status": "success"}, status_code=201)
+    response.set_cookie(
+        key="jwt",
+        value=new_tokens["access_token"],
+        httponly=False,
+        secure=True,
+        samesite="Lax",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=new_tokens["refresh_token"],
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+    )
+    return response

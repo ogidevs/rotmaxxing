@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import {
    BrowserRouter as Router,
    Route,
@@ -10,11 +9,11 @@ import HomePage from './HomePage.tsx'; // The page users see after login
 import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
 
 const App = () => {
-   const { isAuthenticated } = AuthHandler(); // Get the isAuthenticated function directly from AuthHandler
+   const { authed } = AuthHandler(); // Get the isAuthenticated function directly from AuthHandler
 
-   useEffect(() => {
-      // No need to set any local state for isAuthenticated anymore
-   }, [isAuthenticated]);
+   if (authed == null) {
+      return <div>Loading...</div>;
+   }
 
    return (
       <Router>
@@ -23,27 +22,17 @@ const App = () => {
                {/* If the user is authenticated, navigate them to the dashboard */}
                <Route
                   path="/home"
-                  element={
-                     isAuthenticated() ? <HomePage /> : <Navigate to="/start" />
-                  }
+                  element={authed ? <HomePage /> : <Navigate to="/start" />}
                />
                {/* Login route */}
                <Route
                   path="/start"
-                  element={
-                     !isAuthenticated() ? (
-                        <LoginPage />
-                     ) : (
-                        <Navigate to="/home" />
-                     )
-                  }
+                  element={!authed ? <LoginPage /> : <Navigate to="/home" />}
                />
                {/* Add other routes here */}
                <Route
                   path="/"
-                  element={
-                     <Navigate to={isAuthenticated() ? '/home' : '/start'} />
-                  }
+                  element={<Navigate to={authed ? '/home' : '/start'} />}
                />
             </Routes>
          </div>

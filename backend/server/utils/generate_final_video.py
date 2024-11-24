@@ -67,7 +67,7 @@ async def finalize_video(
         final_video.audio = CompositeAudioClip([audio])
 
         final_video.write_videofile(
-            str(output_file), fps=30, codec="libx264", preset="ultrafast"
+            str(output_file), fps=30, codec="h264", preset="ultrafast"
         )
 
         return str(output_file)

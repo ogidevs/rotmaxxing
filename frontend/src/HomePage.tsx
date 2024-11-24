@@ -2,23 +2,20 @@ import React, { useState } from 'react';
 import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
 import { Button } from '@/components/ui/button';
 import { ProfileHeader } from '@/components/custom/ProfileHeader';
+import axios from 'axios';
 
 const HomePage: React.FC = () => {
    const API_URL = 'http://localhost:8001';
-   const { getAuthHeaders, user, refreshUserData } = AuthHandler(); // Get the logout function from AuthHandler
+   const { user, verifyToken } = AuthHandler(); // Get the logout function from AuthHandler
    const [text, setText] = useState<string>('');
    const [videoUrl, setVideoUrl] = useState<string>('');
    const [loading, setLoading] = useState<boolean>(false);
 
    const handleClick = async () => {
       setLoading(true);
-      const response = await fetch(`${API_URL}/uploads/generateBrainRot`, {
-         method: 'POST',
-         headers: {
-            ...getAuthHeaders(),
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({
+      const response = await axios.post(
+         `${API_URL}/uploads/generateBrainRot`,
+         {
             text: text,
             title: 'Your Title',
             subtitle_options: {
@@ -45,15 +42,22 @@ const HomePage: React.FC = () => {
             audio_options: {
                voice: 'alloy',
             },
-         }),
-      });
-      if (!response.ok) {
+         },
+         {
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            responseType: 'blob',
+            withCredentials: true,
+         }
+      );
+      if (response.status !== 200) {
          console.error('Failed to generate brain rot:', response);
          setLoading(false);
          return;
       }
-      refreshUserData();
-      const blob = await response.blob();
+      verifyToken();
+      const blob = new Blob([response.data], { type: 'video/mp4' });
       const videoUrl = URL.createObjectURL(blob);
       setVideoUrl(videoUrl);
       setLoading(false);
@@ -82,7 +86,6 @@ const HomePage: React.FC = () => {
                src={videoUrl}
                width="560"
                height="315"
-               frameBorder="0"
                allowFullScreen
             ></iframe>
          )}
