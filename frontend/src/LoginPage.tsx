@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoogleLoginButton } from './components/custom/GoogleLoginButton';
 import AuthHandler from './AuthHandler'; // Import the AuthHandler
-import { Lead } from './components/custom/Typography';
 import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 import { useState } from 'react';

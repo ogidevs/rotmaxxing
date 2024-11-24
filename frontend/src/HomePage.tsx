@@ -5,7 +5,7 @@ import { ProfileHeader } from '@/components/custom/ProfileHeader';
 
 const HomePage: React.FC = () => {
    const API_URL = 'http://localhost:8001';
-   const { logout, getAuthHeaders, user } = AuthHandler(); // Get the logout function from AuthHandler
+   const { logout, getAuthHeaders, user, refreshUserData } = AuthHandler(); // Get the logout function from AuthHandler
    const [text, setText] = useState<string>('');
    const [videoUrl, setVideoUrl] = useState<string>('');
    const [loading, setLoading] = useState<boolean>(false);
@@ -52,6 +52,7 @@ const HomePage: React.FC = () => {
          setLoading(false);
          return;
       }
+      refreshUserData();
       const blob = await response.blob();
       const videoUrl = URL.createObjectURL(blob);
       setVideoUrl(videoUrl);

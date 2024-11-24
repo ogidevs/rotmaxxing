@@ -157,6 +157,16 @@ const useAuthHandler = () => {
       );
    };
 
+   const refreshUserData = async () => {
+      await fetch(`${API_URL}/users/me`, {
+         headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+         },
+      })
+         .then((response) => response.json())
+         .then((data) => setUser(data))
+         .catch((error) => console.error('Failed to get user:', error));
+   };
    // Provides authorization headers for API requests
    const getAuthHeaders = (): Record<string, string> => {
       const token = localStorage.getItem('jwt');
@@ -169,6 +179,7 @@ const useAuthHandler = () => {
       logout,
       user,
       token,
+      refreshUserData,
       isAuthenticated,
       getAuthHeaders,
    };
