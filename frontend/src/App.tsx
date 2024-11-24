@@ -5,14 +5,15 @@ import {
    Navigate,
 } from 'react-router-dom';
 import LoginPage from './LoginPage'; // Your login page component
-import HomePage from './HomePage.tsx'; // The page users see after login
+import HomePage from './HomePage'; // The page users see after login
+import LoadingScreen from '@/components/custom/LoadingScreen'; // Import the LoadingScreen component
 import AuthHandler from './AuthHandler'; // Import AuthHandler for authentication logic
 
 const App = () => {
    const { authed } = AuthHandler(); // Get the isAuthenticated function directly from AuthHandler
 
    if (authed == null) {
-      return <div>Loading...</div>;
+      return <LoadingScreen />;
    }
 
    return (

@@ -1,6 +1,111 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Dict, Any
 
+class SubtitleOptions(BaseModel):
+    font: str = Field(
+        "Montserrat-VariableFont.ttf",
+        description="The font file to be used for the subtitles.",
+        example="Montserrat-VariableFont.ttf",
+    )
+    FontSize: int = Field(
+        24,
+        description="The font size in pixels.",
+        example=24,
+    )
+    PrimaryColour: str = Field(
+        "&HFFFFFF&",
+        description="The text color in hexadecimal.",
+        example="&HFFFFFF&",
+    )
+    SecondaryColour: str = Field(
+        "&HFF0000&",
+        description="The secondary color in hexadecimal.",
+        example="&HFF0000&",
+    )
+    Outline: int = Field(
+        2,
+        description="The outline width in pixels.",
+        example=2,
+    )
+    OutlineColour: str = Field(
+        "&H000000&",
+        description="The outline color in hexadecimal.",
+        example="&H000000&",
+    )
+    Shadow: int = Field(
+        1,
+        description="The shadow effect (0 or 1).",
+        example=1,
+    )
+    ShadowColour: str = Field(
+        "&H000000&",
+        description="The shadow color in hexadecimal.",
+        example="&H000000&",
+    )
+    Bold: int = Field(
+        1,
+        description="The bold text (0 or 1).",
+        example=1,
+    )
+    Italic: int = Field(
+        1,
+        description="The italic text (0 or 1).",
+        example=1,
+    )
+    MarginV: int = Field(
+        10,
+        description="The vertical margin (distance from bottom).",
+        example=10,
+    )
+    Underline: int = Field(
+        1,
+        description="The underline text (0 or 1).",
+        example=1,
+    )
+    StrikeOut: int = Field(
+        0,
+        description="The strikeout text (0 or 1).",
+        example=0,
+    )
+    Alignment: str = Field(
+        "center",
+        description="The subtitle alignment (bottom-center).",
+        example="center",
+    )
+
+class VideoOptions(BaseModel):
+    audio_fadein: int = Field(
+        3,
+        description="Fade in audio for smoother start.",
+        example=3,
+    )
+    audio_fadeout: int = Field(
+        3,
+        description="Fade out audio for smoother end.",
+        example=3,
+    )
+    video_fadein: int = Field(
+        3,
+        description="Fade in video for smoother start.",
+        example=3,
+    )
+    video_fadeout: int = Field(
+        3,
+        description="Fade out video for smoother end.",
+        example=3,
+    )
+    subtitles_position: str = Field(
+        "top",
+        description="The position of the subtitles (top or center).",
+        example="top",
+    )
+    
+class AudioOptions(BaseModel):
+    voice: str = Field(
+        "alloy",
+        description="The voice to be used for the audio.",
+        example="alloy",
+    )
 
 class UploadSchema(BaseModel):
     title: str = Field(
@@ -12,94 +117,9 @@ class UploadSchema(BaseModel):
         min_length=1,
         max_length=4000,
     )
-    subtitle_options: Optional[Dict[str, Any]] = Field(
-        None,
-        description="subtitle_options for the upload.",
-        example={
-            "font": "Montserrat-VariableFont.ttf",
-            "font_size": 40,  # Larger font size for better visibility
-            "color": "white",
-            "stroke_color": "black",
-            "stroke_width": 5,  # Enhance stroke for legibility
-            "horizontal_align": "center",
-            "vertical_align": "center",
-            "text_align": "center",
-            "bg_color": None,  # Transparent background
-            "interline": 2,  # Adjust line spacing for readability
-            "method": "caption",  # Automatically size to fit text
-            "transparent": True,
-            "duration": 5,  # Default duration (adjust per clip's length)
-        },
-    )
-    video_options: Optional[Dict[str, Any]] = Field(
-        None,
-        description="video_options for the upload.",
-        example={
-            "audio_fadein": 3,  # Fade in audio for smoother start
-            "audio_fadeout": 3,  # Fade out audio for smoother end
-            "video_fadein": 3,  # Fade in video for smoother start
-            "video_fadeout": 3,  # Fade out video for smoother end
-            "subtitles_position": "center",
-        },
-    )
-    audio_options: Optional[Dict[str, Any]] = Field(
-        None,
-        description="audio_options for the upload.",
-        example={
-            "voice": "alloy",
-        },
-    )
-
-    @model_validator(mode="before")
-    def set_default_subtitle_options(cls, values):
-        default_subtitle_options = {
-            "font": "Montserrat-VariableFont.ttf",
-            "font_size": 20,
-            "color": "white",
-            "stroke_color": "black",
-            "stroke_width": 2,
-            "bg_color": None,
-            "text_align": "center",
-            "horizontal_align": "center",
-            "vertical_align": "center",
-            "interline": 6,
-            "method": "label",
-            "transparent": True,
-        }
-        subtitle_options = values.get("subtitle_options", {})
-        if subtitle_options is None:
-            subtitle_options = {}
-        # Merge default subtitle_options with provided values
-        values["subtitle_options"] = {**default_subtitle_options, **subtitle_options}
-        return values
-
-    @model_validator(mode="before")
-    def set_default_video_options(cls, values):
-        default_video_options = {
-            "audio_fadein": 3,
-            "audio_fadeout": 3,
-            "video_fadein": 3,
-            "video_fadeout": 3,
-            "subtitles_position": "top",
-        }
-        video_options = values.get("video_options", {})
-        if video_options is None:
-            video_options = {}
-        # Merge default video_options with provided values
-        values["video_options"] = {**default_video_options, **video_options}
-        return values
-
-    @model_validator(mode="before")
-    def set_default_audio_options(cls, values):
-        default_audio_options = {
-            "voice": "alloy",
-        }
-        audio_options = values.get("audio_options", {})
-        if audio_options is None:
-            audio_options = {}
-        # Merge default audio_options with provided values
-        values["audio_options"] = {**default_audio_options, **audio_options}
-        return values
-
+    subtitle_options: SubtitleOptions
+    video_options: VideoOptions
+    audio_options: AudioOptions
+    
     class Config:
         str_strip_whitespace = True

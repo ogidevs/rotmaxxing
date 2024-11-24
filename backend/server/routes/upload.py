@@ -38,7 +38,7 @@ async def serve_subtitles(folder_id: str, request : Request):
     return FileResponse(file_path)
 
 @upload_router.post("/generateBrainRot", dependencies=[Depends(JWTBearer())])
-@limiter.limit("1/minute")
+@limiter.limit("10/minute")
 async def upload_file(upload: UploadSchema, request : Request, token: dict = Depends(JWTBearer())):
     decoded_token = decode_jwt(token)
     user = await get_user(decoded_token["user_id"])
@@ -55,7 +55,7 @@ async def upload_file(upload: UploadSchema, request : Request, token: dict = Dep
     folder_path = Path(os.getcwd() + f"/static/uploads/{generated_id}")
     folder_path.mkdir(parents=True, exist_ok=True)
     speech_path = await text_to_speech(
-        text=upload.text, folder_id=generated_id, voice=upload.audio_options["voice"]
+        text=upload.text, folder_id=generated_id, voice=upload.audio_options.voice
     )
     subtitles_path = await generate_subtitles(
         folder_id=generated_id,
