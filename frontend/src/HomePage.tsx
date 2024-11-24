@@ -5,7 +5,7 @@ import { ProfileHeader } from '@/components/custom/ProfileHeader';
 
 const HomePage: React.FC = () => {
    const API_URL = 'http://localhost:8001';
-   const { logout, getAuthHeaders, user, refreshUserData } = AuthHandler(); // Get the logout function from AuthHandler
+   const { getAuthHeaders, user, refreshUserData } = AuthHandler(); // Get the logout function from AuthHandler
    const [text, setText] = useState<string>('');
    const [videoUrl, setVideoUrl] = useState<string>('');
    const [loading, setLoading] = useState<boolean>(false);
@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
                email={user.email}
                username={user.username}
                profilePicture={user.picture}
-               credits={user.credit}
+               credit={user.credit}
             />
          )}
          <h1>Create Your Brain Rot in Couple of Seconds</h1>
@@ -88,9 +88,6 @@ const HomePage: React.FC = () => {
          )}
          <Button onClick={handleClick} className="m-4" disabled={loading}>
             Generate Brain Rot
-         </Button>
-         <Button onClick={logout} className="m-4">
-            Logout
          </Button>
          {loading && <p>Loading...</p>}
       </div>

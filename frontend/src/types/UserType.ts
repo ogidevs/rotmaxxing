@@ -3,6 +3,7 @@ export interface UserType {
    email: string;
    picture: string;
    token: string;
+   credit: number;
    username: string;
    _id: string;
 }
