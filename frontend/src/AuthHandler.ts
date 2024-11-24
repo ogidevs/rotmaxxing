@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import type { UserType } from '@/types/UserType';
 
 // Replace with your API URL
 const API_URL = 'http://localhost:8001';
 
 const useAuthHandler = () => {
-   const [user, setUser] = useState<any>(null);
+   const [user, setUser] = useState<UserType | null>(null);
    const [token, setToken] = useState<string | null>(null);
    useEffect(() => {
       const initializeAuth = async () => {
