@@ -22,7 +22,6 @@ import {
    SelectValue,
 } from '../ui/select';
 import { Label } from '@radix-ui/react-label';
-import { Button } from '../ui/button';
 
 interface UploadFiltersProps {
    filters: {
