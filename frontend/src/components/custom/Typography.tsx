@@ -9,7 +9,7 @@ const headingVariants = cva('font-heading scroll-m-20 tracking-tight', {
          muted: 'text-zinc-500 dark:text-zinc-400',
          primary: 'text-primary dark:text-primary-foreground',
          gradient:
-            'bg-gradient-to-r from-rose-400 to-rose-500 text-transparent bg-clip-text',
+            'bg-gradient-to-r from-rose-400 to-rose-500 text-transparent bg-clip-text dark:from-rose-600 dark:to-rose-700 ',
       },
    },
    defaultVariants: {
@@ -24,7 +24,15 @@ interface H1Props extends VariantProps<typeof headingVariants> {
 
 export function H1({ children, color, className }: H1Props) {
    return (
-      <h1 className={cn(headingVariants({ color, className }))}>{children}</h1>
+      <h1
+         className={cn(
+            headingVariants({ color }),
+            'mb-10 scroll-m-20 text-4xl font-bold transition-colors first:mt-0',
+            className
+         )}
+      >
+         {children}
+      </h1>
    );
 }
 
@@ -33,7 +41,7 @@ export function H2({ children, color, className }: H1Props) {
       <h2
          className={cn(
             headingVariants({ color }),
-            'mt-10 scroll-m-20 text-3xl font-semibold transition-colors first:mt-0',
+            'mb-10 scroll-m-20 text-3xl font-semibold transition-colors first:mt-0',
             className
          )}
       >
@@ -48,7 +56,7 @@ export function H3({ children, color, className }: H1Props) {
       <h3
          className={cn(
             headingVariants({ color }),
-            'mt-8 scroll-m-20 text-2xl font-semibold',
+            'mb-8 scroll-m-20 text-2xl font-semibold',
             className
          )}
       >
@@ -63,7 +71,7 @@ export function H4({ children, color, className }: H1Props) {
       <h4
          className={cn(
             headingVariants({ color }),
-            'mt-8 scroll-m-20 text-xl font-semibold',
+            'mb-8 scroll-m-20 text-xl font-semibold',
             className
          )}
       >
@@ -82,7 +90,7 @@ export function P({
    return (
       <p
          className={cn(
-            'font-body text-zinc-900 dark:text-zinc-50 leading-7 [&:not(:first-child)]:mt-6',
+            'font-body text-zinc-900 dark:text-zinc-50 leading-7 [&:not(:first-child)]:mb-6',
             className
          )}
       >
@@ -101,7 +109,7 @@ export function Blockquote({
    return (
       <blockquote
          className={cn(
-            'font-body text-zinc-900 dark:text-zinc-50 mt-6 border-l-2 pl-6 italic',
+            'font-body text-zinc-900 dark:text-zinc-50 mb-6 border-l-2 pl-6 italic',
             className
          )}
       >
@@ -139,7 +147,7 @@ export function Lead({
    return (
       <p
          className={cn(
-            'font-body text-zinc-900 dark:text-zinc-50 text-xl text-muted-foreground',
+            'font-body text-zinc-900 dark:text-zinc-50 text-sm text-muted-foreground',
             className
          )}
       >
@@ -215,7 +223,7 @@ export function List({
    return (
       <ul
          className={cn(
-            'font-body text-zinc-900 dark:text-zinc-50 my-6 ml-6 list-disc [&>li]:mt-2',
+            'font-body text-zinc-900 dark:text-zinc-50 my-6 ml-6 list-disc [&>li]:mb-2',
             className
          )}
       >

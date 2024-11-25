@@ -34,7 +34,7 @@ app.include_router(upload_router, prefix="/uploads", tags=["uploads"])
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 origins = [
-    "*"
+    os.getenv("FRONTEND_URL"),
 ]
 
 app.add_middleware(
@@ -43,6 +43,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 @app.exception_handler(404)

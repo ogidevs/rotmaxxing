@@ -25,7 +25,6 @@ class UserResponseSchema(BaseModel):
     id: str = Field(..., alias="_id")  # Map `_id` to `id`
     username: str
     email: str
-    token: Optional[str] = None
     credit: int
     picture: Optional[str] = None
 

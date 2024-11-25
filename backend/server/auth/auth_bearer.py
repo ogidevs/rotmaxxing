@@ -25,16 +25,23 @@ oauth.register(
         "prompt": "select_account",  # force to select account
     },
 )
-
-
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials = await super(
-            JWTBearer, self
-        ).__call__(request)
+        # First, check for a token in the cookies
+        jwt_token = request.cookies.get('jwt')
+        if jwt_token:
+            if not self.verify_jwt(jwt_token):
+                raise HTTPException(
+                    status_code=403, detail="Invalid token or expired token in cookies."
+                )
+            return jwt_token
+        
+        # If no token in cookies, check headers for JWT token
+        credentials: HTTPAuthorizationCredentials = await super(JWTBearer, self).__call__(request)
+
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise HTTPException(
@@ -45,8 +52,9 @@ class JWTBearer(HTTPBearer):
                     status_code=403, detail="Invalid token or expired token."
                 )
             return credentials.credentials
+        
+        
 
-        # If not a JWT token, check for Google authentication
         user_data = await oauth.google.parse_id_token(request)
         if user_data:
             return user_data  # Return Google user info

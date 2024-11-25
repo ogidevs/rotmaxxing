@@ -1,83 +1,101 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import type { UserType } from '@/types/UserType';
 
 // Replace with your API URL
 const API_URL = 'http://localhost:8001';
 
 const useAuthHandler = () => {
-   const [user, setUser] = useState<any>(null);
-   const [token, setToken] = useState<string | null>(null);
-   useEffect(() => {
-      const initializeAuth = async () => {
-         if (isAuthenticated()) {
-            const isVerified = await verifyToken();
-            if (!isVerified) {
-               console.warn('Token verification failed. Logging out...');
-               logout();
-            }
+   const [user, setUser] = useState<UserType | null>(null);
+   const [authed, setAuthed] = useState<boolean | null>(null);
+   const isInitialized = useRef(false);
+   const isVerifying = useRef(false);
+   const isRefreshing = useRef(false);
+   const isLoggingOut = useRef(false);
+
+   axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+         if (error.response?.status === 403) {
+            if (isLoggingOut.current) return false;
+            const refreshed = await refreshAccessToken();
+            if (!refreshed) logout();
+            window.location.href = '/';
          }
+         return Promise.reject(error);
+      }
+   );
+
+   useEffect(() => {
+      if (isInitialized.current) return;
+      const initializeAuth = async () => {
+         if (!hasAuthCookie()) {
+            setAuthed(false);
+            return;
+         }
+         isInitialized.current = true;
+
+         await verifyToken();
       };
-      syncCookiesToLocalStorage();
+
       initializeAuth();
    }, []);
 
-   // Synchronizes cookies with localStorage
-   const syncCookiesToLocalStorage = () => {
-      const cookies = document.cookie.split('; ');
+   const refreshAccessToken = async (): Promise<boolean> => {
+      if (isRefreshing.current) return false;
+      isRefreshing.current = true;
 
-      cookies.forEach((cookie) => {
-         // Find the first occurrence of "=" to split the key and value
-         const indexOfEqual = cookie.indexOf('=');
-         if (indexOfEqual === -1) return; // Skip if "=" is not found in the cookie string
-
-         const key = cookie.substring(0, indexOfEqual);
-         const value = cookie.substring(indexOfEqual + 1);
-         const decodedValue = decodeURIComponent(value);
-
-         // Handle the JWT cookie
-         if (key === 'jwt') {
-            localStorage.setItem('jwt', decodedValue.replace(/\"/g, ''));
-         }
-
-         // Handle the userInfo cookie
-         if (key === 'userInfo') {
-            try {
-               const cleanedValue = decodedValue.replace(/\\054/g, ',');
-               const parsedValue = JSON.parse(cleanedValue);
-               localStorage.setItem('userInfo', parsedValue);
-               console.log('Parsed userInfo cookie:', parsedValue);
-            } catch (err) {
-               console.error('Failed to parse userInfo cookie:', err);
-               console.error('Decoded userInfo cookie:', decodedValue); // Log the original decoded value for debugging
-            }
-         }
-      });
-   };
-
-   // Verifies the token with the server
-   const verifyToken = async (): Promise<boolean> => {
       try {
-         const token = localStorage.getItem('jwt');
-         if (!token) return false;
-
-         const response = await axios.get(`${API_URL}/users/verify`, {
-            headers: {
-               Authorization: `Bearer ${token}`,
-            },
-         });
-         if (response.data?.token) {
-            // Update the token and userInfo if verification is successful
-            setUser(response.data);
-            setToken(response.data.token);
-            localStorage.setItem('jwt', response.data.token);
-            localStorage.setItem('userInfo', JSON.stringify(response.data));
+         const response = await axios.post(
+            `${API_URL}/users/refresh`,
+            {},
+            { withCredentials: true }
+         );
+         if (response.data.status === 'success' && response.status === 201) {
+            console.log('New token received');
             return true;
          }
+         console.error('No new token received during refresh');
+         return false;
+      } catch (error) {
+         console.error('Failed to refresh access token:', error);
+         return false;
+      } finally {
+         isRefreshing.current = false; // Reset flag
+      }
+   };
 
+   const verifyToken = async (): Promise<boolean> => {
+      if (isVerifying.current) return false; // Prevent multiple simultaneous verify calls
+      isVerifying.current = true;
+
+      try {
+         const response = await axios.get(`${API_URL}/users/verify`, {
+            withCredentials: true,
+         });
+
+         if (response.data) {
+            setUser(response.data);
+            setAuthed(true);
+            return true;
+         }
          return false;
       } catch (error) {
          console.error('Error during token verification:', error);
          return false;
+      } finally {
+         isVerifying.current = false; // Reset flag
+      }
+   };
+
+   const fetchMe = async () => {
+      try {
+         const response = await axios.get(`${API_URL}/users/me`, {
+            withCredentials: true,
+         });
+         setUser(response.data);
+      } catch (error) {
+         console.error('Failed to fetch user data:', error);
       }
    };
 
@@ -89,19 +107,25 @@ const useAuthHandler = () => {
       passwordConfirm: string
    ): Promise<{ success: boolean; error?: any }> => {
       try {
-         const response = await axios.post(`${API_URL}/users/register`, {
-            username,
-            email,
-            password,
-            confirm_password: passwordConfirm,
-         });
-
-         if (response.data?.token) {
-            localStorage.setItem('jwt', response.data.token);
-            const isVerified = await verifyToken();
-            if (isVerified) {
-               return { success: true, error: null };
+         const response = await axios.post(
+            `${API_URL}/users/register`,
+            {
+               username,
+               email,
+               password,
+               confirm_password: passwordConfirm,
+            },
+            {
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               withCredentials: true,
             }
+         );
+
+         const isVerified = await verifyToken();
+         if (isVerified) {
+            return { success: true, error: null };
          }
          console.error('Failed to register:', response.data);
          return { success: false, error: 'Failed to register' };
@@ -119,17 +143,23 @@ const useAuthHandler = () => {
       password: string
    ): Promise<{ success: boolean; error?: any }> => {
       try {
-         const response = await axios.post(`${API_URL}/users/login`, {
-            email,
-            password,
-         });
-
-         if (response.data?.token) {
-            localStorage.setItem('jwt', response.data.token);
-            const isVerified = await verifyToken();
-            if (isVerified) {
-               return { success: true, error: null };
+         const response = await axios.post(
+            `${API_URL}/users/login`,
+            {
+               email,
+               password,
+            },
+            {
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               withCredentials: true,
             }
+         );
+
+         const isVerified = await verifyToken();
+         if (isVerified) {
+            return { success: true, error: null };
          }
          console.error('Invalid credentials:', response.data);
          return { success: false, error: 'Invalid credentials' };
@@ -141,36 +171,28 @@ const useAuthHandler = () => {
       }
    };
 
-   // Logs out the user
-   const logout = () => {
-      localStorage.removeItem('jwt');
-      localStorage.removeItem('userInfo');
-      document.cookie = 'jwt=; Max-Age=0; path=/';
-      document.cookie = 'userInfo=; Max-Age=0; path=/';
-      window.location.href = '/'; // Redirect to the login page
+   const logout = async () => {
+      isLoggingOut.current = true;
+      try {
+         axios.post(`${API_URL}/users/logout`, {}, { withCredentials: true });
+         window.location.href = '/';
+         return;
+      } catch (error) {
+         console.error('Failed to logout:', error);
+      }
    };
 
-   // Checks if the user is authenticated
-   const isAuthenticated = (): boolean => {
-      return (
-         !!localStorage.getItem('jwt') && !!localStorage.getItem('userInfo')
-      );
-   };
-
-   // Provides authorization headers for API requests
-   const getAuthHeaders = (): Record<string, string> => {
-      const token = localStorage.getItem('jwt');
-      return token ? { Authorization: `Bearer ${token}` } : {};
+   const hasAuthCookie = () => {
+      return document.cookie.includes('jwt');
    };
 
    return {
-      register,
-      login,
       logout,
+      login,
+      register,
+      fetchMe,
       user,
-      token,
-      isAuthenticated,
-      getAuthHeaders,
+      authed,
    };
 };
 
