@@ -78,9 +78,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   <DialogHeader>
                      <DialogTitle>Refill credits</DialogTitle>
                      <DialogDescription>
-                        <div>
-                           <p>Select the amount of credits to refill:</p>
-                           <div className="flex flex-col space-y-2">
+                        <span className="flex flex-col space-y-4">
+                           <span>Select the amount of credits to refill:</span>
+                           <span className="flex flex-col space-y-2">
                               <Button variant="outline">
                                  100 credits ($10)
                               </Button>
@@ -93,12 +93,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                               <Button variant="outline">
                                  1000 credits ($100)
                               </Button>
-                           </div>
-                           <p className="mt-4 text-sm text-gray-500">
-                              Note: 10 credits is equivalent to 1 query. 1$ = 10
+                           </span>
+                           <span className="mx-auto">
+                              Note: 5 credits are equivalent to 1 query. 1$ = 10
                               credits.
-                           </p>
-                        </div>
+                           </span>
+                        </span>
                      </DialogDescription>
                   </DialogHeader>
                </DialogContent>
