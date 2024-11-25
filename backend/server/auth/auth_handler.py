@@ -8,7 +8,7 @@ JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
 
 
 def sign_jwt(user_id: str) -> Dict[str, str]:
-    access_payload = {"user_id": user_id, "expires": time.time() + 900} # 15 minutes
+    access_payload = {"user_id": user_id, "expires": time.time() + 60 * 60} # 1 hour
     refresh_payload = {"user_id": user_id, "expires": time.time() + 2592000} # 30 days
     
     access_token = jwt.encode(access_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)

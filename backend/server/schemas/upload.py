@@ -146,24 +146,8 @@ class AudioOptions(BaseModel):
         description="The voice to be used for the audio.",
         example="alloy",
     )
-    
-class GenerateSubtitlesSchema(BaseModel):
-    folder_id: str = Field(
-        ..., description="The folder ID of the upload.", min_length=1, max_length=255
-    )
-    text: str = Field(
-        ...,
-        description="The text to be converted to speech and displayed as subtitles.",
-        min_length=1,
-        max_length=4000,
-    )
-    subtitle_options: SubtitleOptions
-    
-    class Config:
-        str_strip_whitespace = True
 
-
-class GenerateAudioSchema(BaseModel):
+class GenerateBrainrotSchema(BaseModel):
     folder_id: Optional[str] = Field(
         description="The folder ID of the upload.", min_length=1, max_length=255
     )
@@ -174,6 +158,8 @@ class GenerateAudioSchema(BaseModel):
         max_length=4000,
     )
     audio_options: AudioOptions
+    subtitle_options: SubtitleOptions
+    
     
     class Config:
         str_strip_whitespace = True

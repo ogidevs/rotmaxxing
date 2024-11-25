@@ -1,13 +1,20 @@
 import React, { useState, useRef } from 'react';
+
+import axios from 'axios';
+import ASS from 'assjs';
+import JSZip from 'jszip';
+
+import { useToast } from '@/hooks/use-toast';
+import { Loader } from 'lucide-react';
 import AuthHandler from '@/AuthHandler';
+
 import { Button } from '@/components/ui/button';
 import { ProfileHeader } from '@/components/custom/ProfileHeader';
 import UploadFilters from '@/components/custom/UploadFilters';
-import axios from 'axios';
-import ASS from 'assjs';
-import { Loader } from 'lucide-react';
+import { Toaster } from '@/components/ui/toaster';
 
 const HomePage: React.FC = () => {
+   const { toast } = useToast();
    const [filters, setFilters] = useState<any>({});
    const API_URL = 'http://localhost:8001';
    const { user, fetchMe } = AuthHandler();
@@ -17,127 +24,116 @@ const HomePage: React.FC = () => {
    const [loading, setLoading] = useState<boolean>(false);
    const assRef = useRef<ASS | null>(null); // Reference to store the ASS instance
 
-   const generatePreivew = async () => {
-      setLoading(true);
-      setVideoUrl(null);
+   // const generatePreivew = async () => {
+   //    try {
+   //       if (assRef.current) {
+   //          assRef.current.destroy();
+   //       }
+   //       setLoading(true);
+   //       setVideoUrl(null);
 
-      const result = await fetchVideoWithAudio();
-      if (!result) {
-         setLoading(false);
-         return;
-      }
-      const [videoBlob, filename] = result;
-      if (!videoBlob) {
-         setLoading(false);
-         return;
-      }
-      const videoUrl = URL.createObjectURL(videoBlob);
+   //       const result = await generateBrainrot();
+   //       if (!result) {
+   //          setLoading(false);
+   //          return;
+   //       }
+   //       const [videoBlob, filename] = result;
+   //       if (!videoBlob) {
+   //          setLoading(false);
+   //          return;
+   //       }
 
-      setVideoUrl(videoUrl);
+   //    } catch (error) {
+   //       console.error('Error generating preview:', error);
+   //       toast({
+   //          title: 'Failed',
+   //          description: 'Failed to generate preview',
+   //       });
+   //       return;
+   //    } finally {
+   //       setLoading(false);
+   //    }
+   // };
 
-      const subtitles = await fetchSubtitles(filename);
-      if (!subtitles) {
-         setLoading(false);
-         return;
-      }
-
-      const videoElement = document.querySelector('#video') as HTMLVideoElement;
-      const assContainer = document.querySelector(
-         '#ass-container'
-      ) as HTMLElement;
-      if (!videoElement || !assContainer) {
-         console.error('Video element or ass-container not found');
-         setLoading(false);
-         return;
-      }
-      if (assRef.current) {
-         assRef.current.destroy();
-      }
-
+   const generateBrainrot = async () => {
       try {
-         const ass = new ASS(subtitles, videoElement, {
-            container: assContainer,
-         });
-         assRef.current = ass;
-         setLoading(false);
+         if (assRef.current) {
+            assRef.current.destroy();
+         }
+         setLoading(true);
+         setVideoUrl(null);
+         const response = await axios.post(
+            `${API_URL}/uploads/generateBrainrot`,
+            {
+               folder_id: folderId,
+               text: text,
+               video_options: {
+                  ...filters.videoOptions,
+                  video_duration: 20,
+               },
+               audio_options: {
+                  ...filters.audioOptions,
+               },
+               subtitle_options: {
+                  ...filters.subtitleOptions,
+               },
+            },
+            {
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               responseType: 'arraybuffer',
+               withCredentials: true,
+            }
+         );
+         const zip = new JSZip();
+         const zipFileName = response.headers['content-disposition']
+            .split('filename=')[1]
+            .replace(/"/g, '')
+            .trim();
+         const content = await zip.loadAsync(response.data);
+         const videoFile = content.file('temp_vid_with_audio.mp4');
+         const subtitleFile = content.file('subtitles.ass');
+         if (videoFile && subtitleFile && zipFileName) {
+            const videoData = await videoFile.async('blob');
+            const filename = zipFileName.split('.')[0];
+            const videoUrl = URL.createObjectURL(videoData);
+
+            setVideoUrl(videoUrl);
+
+            const subtitleData = await subtitleFile.async('text');
+
+            const videoElement = document.querySelector(
+               '#video'
+            ) as HTMLVideoElement;
+            const assContainer = document.querySelector(
+               '#ass-container'
+            ) as HTMLElement;
+            if (!videoElement || !assContainer) {
+               console.error('Video element or ass-container not found');
+               setLoading(false);
+               return;
+            }
+            if (assRef.current) {
+               assRef.current.destroy();
+            }
+
+            const ass = new ASS(subtitleData, videoElement, {
+               container: assContainer,
+            });
+            assRef.current = ass;
+            fetchMe();
+            setFolderId(filename);
+            toast({
+               title: 'Success',
+               description: 'Preview generated and credit updated!',
+            });
+         }
       } catch (error) {
-         console.error('Error initializing ASS:', error);
+         console.log(error);
+      } finally {
          setLoading(false);
       }
-
-      fetchMe();
-      setFolderId(filename);
-   };
-
-   const fetchVideoWithAudio = async () => {
-      const response = await axios.post(
-         `${API_URL}/uploads/generateAudio`,
-         {
-            folder_id: folderId,
-            text: text,
-            video_options: {
-               ...filters.videoOptions,
-               video_duration: 20,
-            },
-            audio_options: {
-               ...filters.audioOptions,
-            },
-         },
-         {
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            responseType: 'blob',
-            withCredentials: true,
-         }
-      );
-      if (response.status !== 200) {
-         console.error('Failed to generate video:', response);
-         setLoading(false);
-         return;
-      }
-      const videoBlob = new Blob([response.data], {
-         type: 'video/mp4',
-      });
-      const contentDisposition = response.headers['content-disposition'];
-      const filenameMatch =
-         contentDisposition && contentDisposition.match(/filename="(.+)"/);
-
-      if (!filenameMatch || !filenameMatch[1]) {
-         console.error('Failed to extract filename from response headers');
-         setLoading(false);
-         return;
-      }
-
-      return [videoBlob, filenameMatch[1]];
-   };
-
-   const fetchSubtitles = async (folder_id: string) => {
-      const response = await axios.post(
-         `${API_URL}/uploads/generateSubtitles`,
-         {
-            folder_id: folder_id,
-            text: text,
-            subtitle_options: {
-               ...filters.subtitleOptions,
-            },
-         },
-         {
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            responseType: 'blob',
-            withCredentials: true,
-         }
-      );
-      if (response.status !== 200) {
-         console.error('Failed to generate subtitles:', response);
-         return;
-      }
-      const subtitlesBlob = new Blob([response.data], {
-         type: 'text/plain',
-      });
-      return subtitlesBlob.text();
    };
 
    const downloadVideo = async (): Promise<void> => {
@@ -158,10 +154,7 @@ const HomePage: React.FC = () => {
             withCredentials: true,
          }
       );
-      if (response.status !== 200) {
-         console.error('Failed to download video:', response);
-         return;
-      }
+
       const videoBlob = new Blob([response.data], {
          type: 'video/mp4',
       });
@@ -199,7 +192,7 @@ const HomePage: React.FC = () => {
             <div className="flex flex-row">
                <UploadFilters filters={filters} setFilters={setFilters} />
                <Button
-                  onClick={generatePreivew}
+                  onClick={generateBrainrot}
                   className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
                >
                   Generate Brain Rot
@@ -229,7 +222,8 @@ const HomePage: React.FC = () => {
                   }}
                ></div>
             </div>
-            {loading && <Loader className="animate-spin" />}
+            {loading && <Loader className="mt-5 animate-spin" />}
+            <Toaster />
          </div>
       </div>
    );

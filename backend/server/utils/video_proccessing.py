@@ -1,6 +1,7 @@
 from pathlib import Path
 import ffmpeg
 import asyncio
+import random
 
 
 output_dest = Path(__file__).resolve().parent.parent.parent / "static" / "uploads"
@@ -11,15 +12,16 @@ async def add_audio_to_video(video_path, audio_path, folder_id, video_duration):
     try:
         output_file = output_dest / str(folder_id) / f"temp_vid_with_audio.mp4"
         video_path, audio_path = map(str, (video_path, audio_path))
-        video_input_stream = ffmpeg.input(str(video_path), t=video_duration)
+        random_start = random.uniform(await get_video_duration(video_path) - video_duration, 0)
+        video_input_stream = ffmpeg.input(str(video_path), t=video_duration, ss=random_start)
         audio_input_stream = ffmpeg.input(str(audio_path))
-        ffmpeg.output(video_input_stream.video, audio_input_stream.audio, str(output_file), vcodec='copy', acodec='aac').run(overwrite_output=True)
+        ffmpeg.output(video_input_stream.video, audio_input_stream.audio, str(output_file), vcodec='copy', acodec='copy', preset="ultrafast").run(overwrite_output=True)
         return str(output_file)
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
 
-async def finalize_video(
+async def process_video_output(
     video_path, subtitles_path, folder_id, video_options
 ):
     try:
@@ -38,7 +40,7 @@ async def finalize_video(
         video_duration = await get_video_duration(video_path)
 
         # Add subtitles filter
-        video_input_stream = video_input_stream.filter('subtitles', filename=str(subtitles_path).replace("\\", "/"))
+        video_input_stream = video_input_stream.filter('ass', filename=str(subtitles_path).replace("\\", "/"))
         
         # Apply fade in/out to video
         video_input_stream = video_input_stream.filter('fade', type='in', start_time=0, duration=fadein_duration)
@@ -54,7 +56,7 @@ async def finalize_video(
             audio_input_stream = audio_input_stream.filter('afade', type='out', start_time=max(0, video_duration - audio_fadeout), duration=audio_fadeout)
 
         # Combine video and audio streams
-        video_input_stream = ffmpeg.output(video_input_stream, audio_input_stream, str(output_file), vcodec='libx264', acodec='aac', preset="ultrafast", audio_bitrate='192k')
+        video_input_stream = ffmpeg.output(video_input_stream, audio_input_stream, str(output_file), vcodec='libx264', acodec='aac', preset='ultrafast')
         ffmpeg.run(video_input_stream, overwrite_output=True)
         
         return str(output_file)
@@ -68,10 +70,10 @@ async def get_video_duration(video_path):
     return float(probe['format']['duration'])
 
 async def main():
-    await finalize_video(
-        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\0e126e2c-69ec-493c-8aea-5f1640342392\temp_vid_with_audio.mp4",
-        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\0e126e2c-69ec-493c-8aea-5f1640342392\subtitles.ass",
-        "0e126e2c-69ec-493c-8aea-5f1640342392",
+    await process_video_output(
+        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\50f7edb6-cb4b-42b0-b3c6-3cbb6eb087f3\temp_vid_with_audio.mp4",
+        r"C:\Users\ogi\Desktop\rotmaxxing\backend\static\uploads\50f7edb6-cb4b-42b0-b3c6-3cbb6eb087f3\subtitles.ass",
+        "50f7edb6-cb4b-42b0-b3c6-3cbb6eb087f3",
         {
             "audio_fadein": 3,  # Fade in audio for smoother start
             "audio_fadeout": 3,  # Fade out audio for smoother end

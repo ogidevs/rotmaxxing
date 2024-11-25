@@ -282,14 +282,47 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Alignment</Label>
-                              <Input
-                                 type="text"
-                                 name="Alignment"
-                                 placeholder="Alignment"
-                                 value={subtitleOptions.Alignment}
-                                 onChange={handleSubtitleChange}
-                                 className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2"
-                              />
+                              <Select
+                                 onValueChange={(value) =>
+                                    handleSubtitleChange({
+                                       target: { name: 'Alignment', value },
+                                    } as React.ChangeEvent<HTMLInputElement>)
+                                 }
+                                 defaultValue={subtitleOptions.Alignment}
+                              >
+                                 <SelectTrigger className="dark:bg-gray-800 dark:text-white dark:border-gray-700 shadow-md p-2 rounded-lg mb-2">
+                                    <SelectValue placeholder="Alignment" />
+                                 </SelectTrigger>
+                                 <SelectContent>
+                                    <SelectItem value="bottom-left">
+                                       Bottom Left
+                                    </SelectItem>
+                                    <SelectItem value="bottom-center">
+                                       Bottom Center
+                                    </SelectItem>
+                                    <SelectItem value="bottom-right">
+                                       Bottom Right
+                                    </SelectItem>
+                                    <SelectItem value="middle-left">
+                                       Middle Left
+                                    </SelectItem>
+                                    <SelectItem value="center">
+                                       Center
+                                    </SelectItem>
+                                    <SelectItem value="middle-right">
+                                       Middle Right
+                                    </SelectItem>
+                                    <SelectItem value="top-left">
+                                       Top Left
+                                    </SelectItem>
+                                    <SelectItem value="top-center">
+                                       Top Center
+                                    </SelectItem>
+                                    <SelectItem value="top-right">
+                                       Top Right
+                                    </SelectItem>
+                                 </SelectContent>
+                              </Select>
                               <Label>Margin Left</Label>
                               <Input
                                  type="number"

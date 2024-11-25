@@ -10,10 +10,19 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+   Dialog,
+   DialogContent,
+   DialogDescription,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from '@/components/ui/dialog';
 import LightLogo from '@/components/ui/logo_images/light_theme_logo.png';
 import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 
 import ThemeToggler from '@/components/custom/ThemeToggler';
+import { Button } from '../ui/button';
 
 interface ProfileHeaderProps {
    email: string;
@@ -32,34 +41,68 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
    return (
       <div className="w-full bg-white p-4 shadow-md transition-colors duration-100 bg-zinc-100 dark:bg-transparent">
          <div className="flex items-center justify-between">
-            <DropdownMenu>
-               <DropdownMenuTrigger className="cursor-pointer border-none outline-none focus:outline-none bg-transparent p-0 m-0">
-                  <Avatar>
-                     <AvatarImage
-                        src={profilePicture}
-                        className="bg-gray-200 dark:bg-gray-800"
-                     />
-                     <AvatarFallback>
-                        <img
-                           src={`https://ui-avatars.com/api/?name=${username}`}
-                           alt="User PFP"
-                        />
-                     </AvatarFallback>
-                  </Avatar>
-               </DropdownMenuTrigger>
-               <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem disabled>{username}</DropdownMenuItem>
-                  <DropdownMenuItem disabled>{email}</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Credit: {credit}</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" onClick={logout}>
-                     Logout
-                  </DropdownMenuItem>
-               </DropdownMenuContent>
-            </DropdownMenu>
+            <Dialog>
+               <DropdownMenu>
+                  <DropdownMenuTrigger className="cursor-pointer border-none outline-none focus:outline-none bg-transparent p-0 m-0 hover:opacity-80">
+                     <Avatar>
+                        <AvatarImage src={profilePicture} />
+                        <AvatarFallback>
+                           <img
+                              src={`https://ui-avatars.com/api/?name=${username}`}
+                              alt="User PFP"
+                           />
+                        </AvatarFallback>
+                     </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                     <DropdownMenuSeparator />
+                     <DropdownMenuItem disabled>{username}</DropdownMenuItem>
+                     <DropdownMenuItem disabled>{email}</DropdownMenuItem>
+                     <DropdownMenuSeparator />
+                     <DropdownMenuItem>
+                        <DialogTrigger asChild className="cursor-pointer">
+                           <span>Credit: {credit} (Refill)</span>
+                        </DialogTrigger>
+                     </DropdownMenuItem>
+                     <DropdownMenuSeparator />
+                     <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={logout}
+                     >
+                        Logout
+                     </DropdownMenuItem>
+                  </DropdownMenuContent>
+               </DropdownMenu>
+               <DialogContent>
+                  <DialogHeader>
+                     <DialogTitle>Refill credits</DialogTitle>
+                     <DialogDescription>
+                        <div>
+                           <p>Select the amount of credits to refill:</p>
+                           <div className="flex flex-col space-y-2">
+                              <Button variant="outline">
+                                 100 credits ($10)
+                              </Button>
+                              <Button
+                                 variant="outline"
+                                 className="highlight bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 text-white"
+                              >
+                                 500 credits ($50) - Best Buy
+                              </Button>
+                              <Button variant="outline">
+                                 1000 credits ($100)
+                              </Button>
+                           </div>
+                           <p className="mt-4 text-sm text-gray-500">
+                              Note: 10 credits is equivalent to 1 query. 1$ = 10
+                              credits.
+                           </p>
+                        </div>
+                     </DialogDescription>
+                  </DialogHeader>
+               </DialogContent>
+            </Dialog>
 
             <picture className="">
                {/* Light theme image */}

@@ -19,7 +19,6 @@ async def text_to_speech(text: str, voice: str = "alloy", folder_id: str = None)
         response = client.audio.speech.create(model="tts-1", voice=voice, input=text, response_format="wav")
         response.stream_to_file(speech_file_path)
         duration = await get_audio_duration(str(speech_file_path))
-        print(duration)
         return speech_file_path, duration
     
     except Exception as e:
