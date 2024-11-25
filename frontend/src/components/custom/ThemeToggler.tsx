@@ -8,7 +8,12 @@ export default function ThemeToggler() {
       <div>
          <button
             onClick={toggleTheme}
-            className="p-2 rounded-full transition-colors duration-300 ease-in-out bg-rose-200 hover:bg-rose-400 outline-none focus:outline-none border-none"
+            className="p-2 text-zinc-50 rounded-full transition-colors duration-300 ease-in-out 
+  bg-gradient-to-r from-rose-400 to-rose-500
+  hover:from-rose-500 hover:to-rose-600 
+  dark:from-rose-600 dark:to-rose-700 
+  dark:hover:from-rose-700 dark:hover:to-rose-800 
+  outline-none focus:outline-none border-none"
          >
             {theme === 'dark' ? (
                <Sun className="w-6 h-6" />

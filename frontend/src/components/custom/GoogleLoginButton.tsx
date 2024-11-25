@@ -13,7 +13,7 @@ export function GoogleLoginButton({
          variant="outline"
          onClick={onClick}
          disabled={isLoading}
-         className="w-full flex items-center gap-2 dark:text-zinc-50 dark:bg-zinc-700 text-zinc-900"
+         className="w-full flex items-center gap-2 dark:text-zinc-50 dark:bg-zinc-800 text-zinc-900"
       >
          <svg
             className="w-5 h-5"
