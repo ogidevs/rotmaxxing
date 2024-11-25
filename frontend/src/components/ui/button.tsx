@@ -19,7 +19,8 @@ const buttonVariants = cva(
                'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
             ghost: 'hover:bg-accent hover:text-accent-foreground',
             link: 'text-primary underline-offset-4 hover:underline',
-            login: 'w-full font-bold bg-gradient-to-r from-rose-400 to-rose-500 text-white hover:shadow-lg transition-all duration-100 bg-[length:200%_auto] hover:bg-[position:right_center]',
+            gradient:
+               'font-bold bg-gradient-to-r from-rose-400 to-rose-500 text-white hover:shadow-lg transition-all duration-100 bg-[length:200%_auto] hover:bg-[position:right_center] dark:from-rose-600 dark:to-rose-700',
          },
          size: {
             default: 'h-9 px-4 py-2',
