@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { ProfileHeader } from '@/components/custom/ProfileHeader';
 import UploadFilters from '@/components/custom/UploadFilters';
 import { Toaster } from '@/components/ui/toaster';
-import ThemeToggler from '@/components/custom/ThemeToggler';
 import { H1 } from '@/components/custom/Typography';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -170,7 +169,7 @@ const HomePage: React.FC = () => {
 
    return (
       <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-all duration-300">
-         <div className="flex flex-col h-screen items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
+         <div className="flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
             {user && (
                <ProfileHeader
                   email={user.email}
@@ -189,7 +188,7 @@ const HomePage: React.FC = () => {
                }}
                aria-label="Type here..."
                placeholder="Type here..."
-               className="w-1/2"
+               className="w-1/2 h-48 text-gray-900 dark:text-white"
             ></Textarea>
 
             <div className="flex flex-row">
@@ -229,7 +228,6 @@ const HomePage: React.FC = () => {
             </div>
             {loading && <Loader className="mt-5 animate-spin" />}
             <Toaster />
-            <ThemeToggler />
          </div>
       </div>
    );
