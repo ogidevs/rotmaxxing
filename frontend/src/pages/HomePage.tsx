@@ -226,7 +226,9 @@ const HomePage: React.FC = () => {
                   }}
                ></div>
             </div>
-            {loading && <Loader className="mt-5 animate-spin" />}
+            {loading && (
+               <Loader className="mt-5 animate-spin text-zinc-100 dark:text-zinc-900" />
+            )}
             <Toaster />
          </div>
       </div>

@@ -112,8 +112,8 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
    return (
       <div className="flex flex-row justify-center items-center transition-all duration-300">
          <Drawer aria-hidden="true">
-            <DrawerTrigger className="m-4">
-               <Button variant={'gradient'}>Filters</Button>
+            <DrawerTrigger className="m-4 font-bold bg-gradient-to-r from-rose-400 to-rose-500 text-white hover:shadow-lg transition-all duration-100 bg-[length:200%_auto] hover:bg-[position:right_center] dark:from-rose-600 dark:to-rose-700 text-sm px-4 py-2 h-9 rounded-lg">
+               Filters
             </DrawerTrigger>
             <DrawerContent className="dark:bg-zinc-900 dark:text-white">
                <DrawerHeader className="flex justify-center items-center flex-col space-y-4 overflow-y-auto">
@@ -420,7 +420,7 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                   </div>
                </DrawerHeader>
                <DrawerFooter>
-                  <DrawerClose className="bg-transparent border-0">
+                  <DrawerClose className="bg-transparent hover:opacity-70">
                      Close
                   </DrawerClose>
                </DrawerFooter>
