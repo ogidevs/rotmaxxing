@@ -168,7 +168,7 @@ const HomePage: React.FC = () => {
    };
 
    return (
-      <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-all duration-300">
+      <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-all duration-100">
          <div className="flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
             {user && (
                <ProfileHeader
