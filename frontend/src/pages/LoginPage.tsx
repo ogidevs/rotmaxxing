@@ -12,6 +12,7 @@ import DarkLogo from '@/components/ui/logo_images/dark_theme_logo.png';
 import { GoogleLoginButton } from '@/components/custom/GoogleLoginButton';
 import ThemeToggler from '@/components/custom/ThemeToggler';
 import { Eye, EyeOff } from 'lucide-react';
+import { H1, Lead } from '@/components/custom/Typography';
 
 export default function AuthPage() {
    const { theme } = useTheme();
@@ -63,9 +64,9 @@ export default function AuthPage() {
 
    return (
       <div
-         className={`flex min-h-screen transition-colors duration-100 ${theme === 'dark' ? 'dark bg-zinc-900' : ''}`}
+         className={`flex min-h-screen transition-alltext-zinc-900 bg-zinc-50 duration-300 ${theme === 'dark' ? 'dark:bg-zinc-900 dark:text-zinc-50' : ''}`}
       >
-         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-700 dark:to-rose-900 m-5">
+         <div className="hidden w-1/2 bg-gradient-to-br rounded-xl from-rose-400 to-rose-500 lg:block dark:bg-gradient-to-br dark:from-rose-600 dark:to-rose-700 m-5">
             <picture className="flex items-center justify-center h-full">
                {/* Light theme image */}
                <source
@@ -80,10 +81,10 @@ export default function AuthPage() {
          </div>
 
          <div className="w-full lg:w-[40%] flex flex-col justify-center items-center p-8">
-            <div className="w-full max-w-md border-2 border-rose-500 rounded-xl py-12 px-8 shadow-[8px_8px_0px_0px_rgba(244,63,94,1)] hover:shadow-[16px_16px_0px_0px_rgba(244,63,94,1)] dark:shadow-[8px_8px_0px_0px_rgba(190,18,60,1)] dark:hover:shadow-[16px_16px_0px_0px_rgba(190,18,60,1)] transition-all bg-zinc-50 dark:bg-zinc-900">
-               <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-rose-400 to-rose-500 text-transparent bg-clip-text">
+            <div className="w-full max-w-md border-2 border-rose-500 rounded-xl py-12 px-8 shadow-[8px_8px_0px_0px_rgba(244,63,94,1)] hover:shadow-[16px_16px_0px_0px_rgba(244,63,94,1)] dark:shadow-[8px_8px_0px_0px_rgba(190,18,60,1)] dark:hover:shadow-[16px_16px_0px_0px_rgba(190,18,60,1)] transition-all duration-300 bg-zinc-50 dark:bg-zinc-900">
+               <H1 color={'gradient'} className="">
                   {isLogin ? 'Login to Your Account' : 'Create Account'}
-               </h1>
+               </H1>
 
                {/* Form */}
                <form className="space-y-6" onSubmit={handleFormSubmit}>
@@ -99,7 +100,7 @@ export default function AuthPage() {
                            id="username"
                            type="text"
                            placeholder="Enter your username"
-                           className="w-full dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
+                           className="w-full"
                            value={username}
                            onChange={(e) => setUsername(e.target.value)}
                         />
@@ -169,17 +170,17 @@ export default function AuthPage() {
                      </div>
                   )}
                   {error && <p className="text-red-500 text-sm">{error}</p>}
-                  <Button type="submit" variant="login">
+                  <Button type="submit" variant="gradient" className="w-full">
                      {isLogin ? 'Login' : 'Register'}
                   </Button>
                   <GoogleLoginButton onClick={handleGoogleLogin} />
                </form>
                <div className="flex justify-between items-center mt-8 text-center flex-col">
-                  <p className="text-zinc-800 dark:text-zinc-200">
+                  <Lead className="mb-2">
                      {isLogin
                         ? "Don't have an account?"
                         : 'Already have an account?'}
-                  </p>
+                  </Lead>
                   <Button
                      variant="outline"
                      size="icon"
@@ -189,7 +190,9 @@ export default function AuthPage() {
                      }}
                      className="w-full dark:bg-zinc-800 dark:text-zinc-200"
                   >
-                     <strong>{isLogin ? 'Register' : 'Login'}</strong>
+                     <strong className="dark:text-zinc-50 text-zinc-900 transition-all duration-300">
+                        {isLogin ? 'Register' : 'Login'}
+                     </strong>
                   </Button>
                </div>
             </div>

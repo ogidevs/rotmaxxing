@@ -12,6 +12,9 @@ import { Button } from '@/components/ui/button';
 import { ProfileHeader } from '@/components/custom/ProfileHeader';
 import UploadFilters from '@/components/custom/UploadFilters';
 import { Toaster } from '@/components/ui/toaster';
+import ThemeToggler from '@/components/custom/ThemeToggler';
+import { H1 } from '@/components/custom/Typography';
+import { Textarea } from '@/components/ui/textarea';
 
 const HomePage: React.FC = () => {
    const { toast } = useToast();
@@ -166,8 +169,8 @@ const HomePage: React.FC = () => {
    };
 
    return (
-      <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-colors duration-100">
-         <div className="flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
+      <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-all duration-300">
+         <div className="flex flex-col h-screen items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
             {user && (
                <ProfileHeader
                   email={user.email}
@@ -176,31 +179,33 @@ const HomePage: React.FC = () => {
                   credit={user.credit}
                />
             )}
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white m-6">
+            <H1 className="text-3xl font-bold text-gray-900 dark:text-white m-6">
                Create Your Brain Rot in Couple of Seconds
-            </h1>
-            <textarea
+            </H1>
+            <Textarea
                onBlur={(event) => {
                   setFolderId(null);
                   setText((event.target as HTMLTextAreaElement).value);
                }}
                aria-label="Type here..."
                placeholder="Type here..."
-               className="text-white dark:text-zinc-200 w-1/2 h-32 p-2 border-2 border-rose-500 rounded-xl m-4"
-            ></textarea>
+               className="w-1/2"
+            ></Textarea>
 
             <div className="flex flex-row">
                <UploadFilters filters={filters} setFilters={setFilters} />
                <Button
                   onClick={generateBrainrot}
-                  className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
+                  className="m-4"
+                  variant={'gradient'}
                >
                   Generate Brain Rot
                </Button>
                <Button
                   disabled={videoUrl != null ? false : true}
                   onClick={downloadVideo}
-                  className="m-4 bg-rose-500 hover:bg-rose-600 text-white"
+                  className="m-4"
+                  variant={'gradient'}
                >
                   Download
                </Button>
@@ -224,6 +229,7 @@ const HomePage: React.FC = () => {
             </div>
             {loading && <Loader className="mt-5 animate-spin" />}
             <Toaster />
+            <ThemeToggler />
          </div>
       </div>
    );
