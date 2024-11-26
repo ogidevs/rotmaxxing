@@ -170,7 +170,7 @@ const HomePage: React.FC = () => {
 
    return (
       <div className="min-h-screen bg-background transition-all duration-300">
-         <div className="min-h-screen flex flex-col items-center justify-center">
+         <div className="flex flex-col items-center justify-center">
             {user && (
                <ProfileHeader
                   email={user.email}
