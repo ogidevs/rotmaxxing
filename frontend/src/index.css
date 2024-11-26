@@ -34,14 +34,14 @@
 
 @layer base {
    :root {
-      --background: 240 5% 98%; /* zinc-50 */
-      --foreground: 240 5% 4%; /* zinc-950 */
-      --card: 240 5% 98%; /* zinc-50 */
-      --card-foreground: 240 5% 4%; /* zinc-950 */
-      --popover: 240 5% 98%; /* zinc-50 */
-      --popover-foreground: 240 5% 4%; /* zinc-950 */
+      --background: 240 5% 96%; /* zinc-50 */
+      --foreground: 240 5% 10%; /* zinc-900 */
+      --card: 240 5% 96%; /* zinc-50 */
+      --card-foreground: 240 5% 10%; /* zinc-900 */
+      --popover: 240 5% 96%; /* zinc-50 */
+      --popover-foreground: 240 5% 10%; /* zinc-900 */
       --primary: 240 5% 34%; /* zinc-700 */
-      --primary-foreground: 240 5% 98%; /* zinc-50 */
+      --primary-foreground: 240 5% 96%; /* zinc-50 */
       --secondary: 240 5% 96%; /* zinc-100 */
       --secondary-foreground: 240 5% 34%; /* zinc-700 */
       --muted: 240 5% 96%; /* zinc-100 */
@@ -49,7 +49,7 @@
       --accent: 240 5% 96%; /* zinc-100 */
       --accent-foreground: 240 5% 34%; /* zinc-700 */
       --destructive: 346 77% 50%; /* rose-500 */
-      --destructive-foreground: 240 5% 98%; /* zinc-50 */
+      --destructive-foreground: 240 5% 96%; /* zinc-50 */
       --border: 240 5% 88%; /* zinc-200 */
       --input: 240 5% 88%; /* zinc-200 */
       --ring: 240 5% 34%; /* zinc-700 */
@@ -57,22 +57,22 @@
    }
 
    .dark {
-      --background: 240 5% 4%; /* zinc-950 */
-      --foreground: 240 5% 98%; /* zinc-50 */
-      --card: 240 5% 4%; /* zinc-950 */
-      --card-foreground: 240 5% 98%; /* zinc-50 */
-      --popover: 240 5% 4%; /* zinc-950 */
-      --popover-foreground: 240 5% 98%; /* zinc-50 */
+      --background: 240 5% 10%; /* zinc-900 */
+      --foreground: 240 5% 96%; /* zinc-50 */
+      --card: 240 5% 10%; /* zinc-900 */
+      --card-foreground: 240 5% 96%; /* zinc-50 */
+      --popover: 240 5% 10%; /* zinc-900 */
+      --popover-foreground: 240 5% 96%; /* zinc-50 */
       --primary: 240 5% 96%; /* zinc-100 */
       --primary-foreground: 240 5% 34%; /* zinc-700 */
       --secondary: 240 5% 26%; /* zinc-800 */
-      --secondary-foreground: 240 5% 98%; /* zinc-50 */
+      --secondary-foreground: 240 5% 96%; /* zinc-50 */
       --muted: 240 5% 26%; /* zinc-800 */
       --muted-foreground: 240 5% 65%; /* zinc-400 */
       --accent: 240 5% 26%; /* zinc-800 */
-      --accent-foreground: 240 5% 98%; /* zinc-50 */
+      --accent-foreground: 240 5% 96%; /* zinc-50 */
       --destructive: 346 77% 30%; /* rose-700 */
-      --destructive-foreground: 240 5% 98%; /* zinc-50 */
+      --destructive-foreground: 240 5% 96%; /* zinc-50 */
       --border: 240 5% 26%; /* zinc-800 */
       --input: 240 5% 26%; /* zinc-800 */
       --ring: 240 5% 88%; /* zinc-200 */
