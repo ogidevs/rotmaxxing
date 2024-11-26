@@ -14,6 +14,7 @@ import UploadFilters from '@/components/custom/UploadFilters';
 import { Toaster } from '@/components/ui/toaster';
 import { H1 } from '@/components/custom/Typography';
 import { Textarea } from '@/components/ui/textarea';
+import ThemeToggler from '@/components/custom/ThemeToggler';
 
 const HomePage: React.FC = () => {
    const { toast } = useToast();
@@ -168,8 +169,8 @@ const HomePage: React.FC = () => {
    };
 
    return (
-      <div className="bg-zinc-100 dark:bg-zinc-900 h-screen transition-all duration-100">
-         <div className="flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 flex-start">
+      <div className="min-h-screen bg-background transition-all duration-300">
+         <div className="min-h-screen flex flex-col items-center justify-center">
             {user && (
                <ProfileHeader
                   email={user.email}
@@ -178,7 +179,7 @@ const HomePage: React.FC = () => {
                   credit={user.credit}
                />
             )}
-            <H1 className="text-3xl font-bold text-gray-900 dark:text-white m-6">
+            <H1 className="text-3xl font-bold text-foreground m-6">
                Create Your Brain Rot in Couple of Seconds
             </H1>
             <Textarea
@@ -188,7 +189,7 @@ const HomePage: React.FC = () => {
                }}
                aria-label="Type here..."
                placeholder="Type here..."
-               className="w-1/2 h-48 text-gray-900 dark:text-white"
+               className="w-1/2 h-48 text-foreground transition-colors duration-300"
             ></Textarea>
 
             <div className="flex flex-row">
@@ -226,8 +227,9 @@ const HomePage: React.FC = () => {
                   }}
                ></div>
             </div>
+            <ThemeToggler />
             {loading && (
-               <Loader className="mt-5 animate-spin text-zinc-100 dark:text-zinc-900" />
+               <Loader className="mt-5 animate-spin text-muted-foreground" />
             )}
             <Toaster />
          </div>

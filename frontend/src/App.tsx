@@ -8,7 +8,6 @@ import LoginPage from '@/pages/LoginPage';
 import HomePage from '@/pages/HomePage';
 import LoadingScreen from '@/components/custom/LoadingScreen';
 import AuthHandler from './AuthHandler';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const App = () => {
    const { authed } = AuthHandler(); // Get the isAuthenticated function directly from AuthHandler
@@ -17,7 +16,6 @@ const App = () => {
    }
 
    return (
-      <ThemeProvider>
          <Router>
             <div className="App">
                <Routes>
@@ -39,7 +37,6 @@ const App = () => {
                </Routes>
             </div>
          </Router>
-      </ThemeProvider>
    );
 };
 

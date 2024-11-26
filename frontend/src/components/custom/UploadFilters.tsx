@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
    SubtitleOptions,
    VideoOptions,
@@ -21,7 +22,8 @@ import {
    SelectTrigger,
    SelectValue,
 } from '../ui/select';
-import { Label } from '@radix-ui/react-label';
+import { Label } from '@/components/ui/label';
+import { Button } from '../ui/button';
 
 interface UploadFiltersProps {
    filters: {
@@ -39,6 +41,7 @@ interface UploadFiltersProps {
 }
 
 const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
+   const { theme } = useTheme();
    const [subtitleOptions, setSubtitleOptions] = useState<SubtitleOptions>({
       Name: 'Default',
       Fontname: 'Montserrat-VariableFont.ttf',
@@ -109,12 +112,14 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
    };
 
    return (
-      <div className="flex flex-row justify-center items-center transition-all duration-300">
-         <Drawer aria-hidden="true">
-            <DrawerTrigger className="m-4 font-bold bg-gradient-to-r from-rose-400 to-rose-500 text-white hover:shadow-lg transition-all duration-100 bg-[length:200%_auto] hover:bg-[position:right_center] dark:from-rose-600 dark:to-rose-700 text-sm px-4 py-2 h-9 rounded-lg">
-               Filters
+      <div className="flex flex-row justify-center items-center">
+         <Drawer>
+            <DrawerTrigger>
+               <Button variant="gradient" className="m-4">
+                  Filters
+               </Button>
             </DrawerTrigger>
-            <DrawerContent className="dark:bg-zinc-900 dark:text-white">
+            <DrawerContent className={`${theme} border`}>
                <DrawerHeader className="flex justify-center items-center flex-col space-y-4 overflow-y-auto">
                   <DrawerTitle>Filters</DrawerTitle>
                   <div className="flex md:flex-row md:space-x-4 flex-col space-x-0 md:space-y-4">
@@ -131,7 +136,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Font"
                                  value={subtitleOptions.Fontname}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Font Size</Label>
                               <Input
@@ -140,7 +144,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Font Size"
                                  value={subtitleOptions.Fontsize}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Primary Colour</Label>
                               <Input
@@ -149,7 +152,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Primary Colour"
                                  value={subtitleOptions.PrimaryColour}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Secondary Colour</Label>
                               <Input
@@ -158,7 +160,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Secondary Colour"
                                  value={subtitleOptions.SecondaryColour}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Back Colour</Label>
                               <Input
@@ -167,7 +168,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Back Colour"
                                  value={subtitleOptions.BackColour}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Bold</Label>
                               <Input
@@ -176,7 +176,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Bold"
                                  value={subtitleOptions.Bold}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Italic</Label>
                               <Input
@@ -185,7 +184,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Italic"
                                  value={subtitleOptions.Italic}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Border Style</Label>
                               <Input
@@ -194,7 +192,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Border Style"
                                  value={subtitleOptions.BorderStyle}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                            </div>
                            <div className="flex flex-col">
@@ -205,7 +202,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Outline Colour"
                                  value={subtitleOptions.OutlineColour}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Outline</Label>
                               <Input
@@ -214,7 +210,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Outline"
                                  value={subtitleOptions.Outline}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Underline</Label>
                               <Input
@@ -223,7 +218,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Underline"
                                  value={subtitleOptions.Underline}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>StrikeOut</Label>
                               <Input
@@ -232,7 +226,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="StrikeOut"
                                  value={subtitleOptions.StrikeOut}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Scale X</Label>
                               <Input
@@ -241,7 +234,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Scale X"
                                  value={subtitleOptions.ScaleX}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Scale Y</Label>
                               <Input
@@ -250,7 +242,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Scale Y"
                                  value={subtitleOptions.ScaleY}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Spacing</Label>
                               <Input
@@ -259,7 +250,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Spacing"
                                  value={subtitleOptions.Spacing}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Angle</Label>
                               <Input
@@ -268,7 +258,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Angle"
                                  value={subtitleOptions.Angle}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                            </div>
                            <div className="flex flex-col">
@@ -279,7 +268,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Shadow"
                                  value={subtitleOptions.Shadow}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Alignment</Label>
                               <Select
@@ -290,7 +278,7 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  }
                                  defaultValue={subtitleOptions.Alignment}
                               >
-                                 <SelectTrigger className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2">
+                                 <SelectTrigger>
                                     <SelectValue placeholder="Alignment" />
                                  </SelectTrigger>
                                  <SelectContent>
@@ -330,7 +318,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Margin L"
                                  value={subtitleOptions.MarginL}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Margin Right</Label>
                               <Input
@@ -339,7 +326,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Margin R"
                                  value={subtitleOptions.MarginR}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                               <Label>Margin Vertical</Label>
                               <Input
@@ -348,7 +334,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                                  placeholder="Margin V"
                                  value={subtitleOptions.MarginV}
                                  onChange={handleSubtitleChange}
-                                 className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                               />
                            </div>
                         </div>
@@ -364,7 +349,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                            placeholder="Audio Fade In"
                            value={videoOptions.audio_fadein}
                            onChange={handleVideoChange}
-                           className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                         />
                         <Label>Audio Fade Out</Label>
                         <Input
@@ -373,7 +357,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                            placeholder="Audio Fade Out"
                            value={videoOptions.audio_fadeout}
                            onChange={handleVideoChange}
-                           className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                         />
                         <Label>Video Fade In</Label>
                         <Input
@@ -382,7 +365,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                            placeholder="Video Fade In"
                            value={videoOptions.video_fadein}
                            onChange={handleVideoChange}
-                           className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                         />
                         <Label>Video Fade Out</Label>
                         <Input
@@ -391,7 +373,6 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                            placeholder="Video Fade Out"
                            value={videoOptions.video_fadeout}
                            onChange={handleVideoChange}
-                           className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2"
                         />
                      </div>
                      <div className="flex flex-col">
@@ -403,7 +384,7 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                            onValueChange={handleAudioChange}
                            defaultValue={audioOptions.voice}
                         >
-                           <SelectTrigger className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700 shadow-md p-2 rounded-lg mb-2">
+                           <SelectTrigger>
                               <SelectValue placeholder="Theme" />
                            </SelectTrigger>
                            <SelectContent>
@@ -419,9 +400,7 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                   </div>
                </DrawerHeader>
                <DrawerFooter>
-                  <DrawerClose className="bg-transparent hover:opacity-70">
-                     Close
-                  </DrawerClose>
+                  <DrawerClose>Close</DrawerClose>
                </DrawerFooter>
             </DrawerContent>
          </Drawer>
