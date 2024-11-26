@@ -24,7 +24,6 @@ import {
    SelectValue,
 } from '../ui/select';
 import { Label } from '@/components/ui/label';
-import { Button } from '../ui/button';
 
 interface UploadFiltersProps {
    filters: {
@@ -115,11 +114,7 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
    return (
       <div className="flex flex-row justify-center items-center">
          <Drawer>
-            <DrawerTrigger>
-               <Button variant="gradient" className="m-4">
-                  Filters
-               </Button>
-            </DrawerTrigger>
+            <DrawerTrigger>Filters</DrawerTrigger>
             <DrawerContent className={`${theme} border`}>
                <DrawerHeader className="flex justify-center items-center flex-col space-y-4 overflow-y-auto">
                   <DrawerTitle>Filters</DrawerTitle>
@@ -400,6 +395,7 @@ const UploadFilters: React.FC<UploadFiltersProps> = ({ setFilters }) => {
                      </div>
                   </div>
                </DrawerHeader>
+               <DrawerDescription></DrawerDescription>
                <DrawerFooter>
                   <DrawerClose>Close</DrawerClose>
                </DrawerFooter>
