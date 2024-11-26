@@ -14,7 +14,6 @@ import UploadFilters from '@/components/custom/UploadFilters';
 import { Toaster } from '@/components/ui/toaster';
 import { H1 } from '@/components/custom/Typography';
 import { Textarea } from '@/components/ui/textarea';
-import ThemeToggler from '@/components/custom/ThemeToggler';
 
 const HomePage: React.FC = () => {
    const { toast } = useToast();
