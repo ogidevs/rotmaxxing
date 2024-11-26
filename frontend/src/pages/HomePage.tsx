@@ -227,7 +227,6 @@ const HomePage: React.FC = () => {
                   }}
                ></div>
             </div>
-            <ThemeToggler />
             {loading && (
                <Loader className="mt-5 animate-spin text-muted-foreground" />
             )}
